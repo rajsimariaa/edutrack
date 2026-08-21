@@ -13,8 +13,7 @@ class GamificationService {
     var query = _supabase
         .from('heatmap_entries')
         .select()
-        .eq('user_id', userId)
-        .order('activity_date', ascending: true);
+        .eq('user_id', userId);
 
     if (startDate != null) {
       query = query.gte('activity_date', startDate.toIso8601String().split('T')[0]);
@@ -23,7 +22,7 @@ class GamificationService {
       query = query.lte('activity_date', endDate.toIso8601String().split('T')[0]);
     }
 
-    final data = await query;
+    final data = await query.order('activity_date', ascending: true);
     return (data as List).map((e) => HeatmapEntry.fromJson(e)).toList();
   }
 
@@ -132,13 +131,13 @@ class GamificationService {
 
     if (room == null) return null;
 
-    final memberCount = await _supabase
+    final memberCountResp = await _supabase
         .from('peer_room_members')
         .select()
         .eq('room_id', room['id'])
         .count();
 
-    if (memberCount >= (room['max_members'] ?? 10)) {
+    if (memberCountResp.count >= (room['max_members'] ?? 10)) {
       throw Exception('Room is full');
     }
 

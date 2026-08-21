@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
-import '../../models/models.dart';
+import '../../models/models.dart' as models;
 import '../../theme/app_theme.dart';
 
 class GamificationScreen extends ConsumerStatefulWidget {
@@ -15,9 +15,9 @@ class GamificationScreen extends ConsumerStatefulWidget {
 
 class _GamificationScreenState extends ConsumerState<GamificationScreen> {
   final _badgeService = BadgeService();
-  List<Badge> _allBadges = [];
-  List<UserBadge> _userBadges = [];
-  List<HeatmapEntry> _heatmap = [];
+  List<models.Badge> _allBadges = [];
+  List<models.UserBadge> _userBadges = [];
+  List<models.HeatmapEntry> _heatmap = [];
   bool _isLoading = true;
 
   @override
@@ -235,7 +235,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
     );
   }
 
-  Widget _buildBadgeItem(Badge badge, {bool isUnlocked = false, bool isPinned = false}) {
+  Widget _buildBadgeItem(models.Badge badge, {bool isUnlocked = false, bool isPinned = false}) {
     return GestureDetector(
       onTap: () => _showBadgeDetails(badge, isUnlocked),
       child: Column(
@@ -292,7 +292,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
     }
   }
 
-  void _showBadgeDetails(Badge badge, bool isUnlocked) {
+  void _showBadgeDetails(models.Badge badge, bool isUnlocked) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Padding(

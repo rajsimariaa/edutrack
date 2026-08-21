@@ -1,10 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import '../services/services.dart';
 import '../models/models.dart';
+import 'service_providers.dart';
 
 class AuthState {
-  final User? user;
+  final supa.User? user;
   final UserProfile? profile;
   final bool isLoading;
   final String? error;
@@ -17,7 +18,7 @@ class AuthState {
   });
 
   AuthState copyWith({
-    User? user,
+    supa.User? user,
     UserProfile? profile,
     bool? isLoading,
     String? error,
@@ -51,12 +52,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final event = authState.event;
       final session = authState.session;
 
-      if (event == AuthChangeEvent.signedIn && session != null) {
+      if (event == supa.AuthChangeEvent.signedIn && session != null) {
         state = state.copyWith(user: session.user);
         _loadProfile(session.user.id);
-      } else if (event == AuthChangeEvent.signedOut) {
+      } else if (event == supa.AuthChangeEvent.signedOut) {
         state = AuthState();
-      } else if (event == AuthChangeEvent.tokenRefreshed && session != null) {
+      } else if (event == supa.AuthChangeEvent.tokenRefreshed && session != null) {
         state = state.copyWith(user: session.user);
       }
     });

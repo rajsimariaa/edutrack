@@ -12,6 +12,7 @@ class ScheduleService {
         .eq('user_id', userId)
         .eq('is_active', true)
         .order('created_at', ascending: false)
+        .limit(1)
         .maybeSingle();
     if (data == null) return null;
     return Schedule.fromJson(data);
@@ -43,14 +44,12 @@ class ScheduleService {
     var query = _supabase
         .from('schedule_items')
         .select()
-        .eq('schedule_id', scheduleId)
-        .order('scheduled_date')
-        .order('start_time');
+        .eq('schedule_id', scheduleId);
     if (date != null) {
       query = query.eq(
           'scheduled_date', date.toIso8601String().split('T')[0]);
     }
-    final data = await query;
+    final data = await query.order('scheduled_date').order('start_time');
     return (data as List).map((e) => ScheduleItem.fromJson(e)).toList();
   }
 

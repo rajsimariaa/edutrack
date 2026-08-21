@@ -1,14 +1,14 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import 'supabase_service.dart';
 import '../models/models.dart';
 
 class AuthService {
   final _supabase = SupabaseService.instance.client;
 
-  User? get currentUser => _supabase.auth.currentUser;
-  Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
+  supa.User? get currentUser => _supabase.auth.currentUser;
+  Stream<supa.AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 
-  Future<AuthResponse> signUp({
+  Future<supa.AuthResponse> signUp({
     required String email,
     required String password,
     required String fullName,
@@ -21,7 +21,7 @@ class AuthService {
     return response;
   }
 
-  Future<AuthResponse> signIn({
+  Future<supa.AuthResponse> signIn({
     required String email,
     required String password,
   }) async {
@@ -73,7 +73,7 @@ class AuthService {
 
   Future<UserProfile> updateProfile({
     required String userId,
-    Map<String, dynamic> updates,
+    required Map<String, dynamic> updates,
   }) async {
     final data = await _supabase
         .from('user_profiles')

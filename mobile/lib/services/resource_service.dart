@@ -12,12 +12,11 @@ class ResourceService {
     var query = _supabase
         .from('past_papers')
         .select()
-        .eq('exam_id', examId)
-        .order('year', ascending: false);
+        .eq('exam_id', examId);
     if (year != null) {
       query = query.eq('year', year);
     }
-    final data = await query;
+    final data = await query.order('year', ascending: false);
     return (data as List).cast<Map<String, dynamic>>();
   }
 
@@ -28,12 +27,11 @@ class ResourceService {
     var query = _supabase
         .from('youtube_links')
         .select()
-        .eq('chapter_id', chapterId)
-        .order('upvotes', ascending: false);
+        .eq('chapter_id', chapterId);
     if (topicId != null) {
       query = query.eq('topic_id', topicId);
     }
-    final data = await query;
+    final data = await query.order('upvotes', ascending: false);
     return (data as List).cast<Map<String, dynamic>>();
   }
 
