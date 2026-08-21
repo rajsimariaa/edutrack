@@ -14,6 +14,17 @@ class SyllabusService {
     return (data as List).map((e) => Exam.fromJson(e)).toList();
   }
 
+  Future<Exam?> getExamForCategory(String category) async {
+    final data = await _supabase
+        .from('exams')
+        .select()
+        .eq('category', category)
+        .eq('is_active', true)
+        .maybeSingle();
+    if (data == null) return null;
+    return Exam.fromJson(data);
+  }
+
   Future<List<Subject>> getSubjects(String examId) async {
     final data = await _supabase
         .from('subjects')

@@ -19,6 +19,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _badgeCount = 0;
   int _streakDays = 0;
   List<ScheduleItem> _todayItems = [];
+  List<PomodoroSession> _recentSessions = [];
 
   @override
   void initState() {
@@ -40,6 +41,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           startDate: DateTime.now().subtract(const Duration(days: 90)),
         ),
         _loadTodayItems(userId),
+        FocusService().getUserSessions(userId, limit: 3),
       ]);
 
       if (!mounted) return;
@@ -48,6 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _badgeCount = (results[1] as List).length;
         _streakDays = _computeStreak(results[2] as List<HeatmapEntry>);
         _todayItems = results[3] as List<ScheduleItem>;
+        _recentSessions = results[4] as List<PomodoroSession>;
       });
     } catch (e) {
       // Silently handle errors - data stays at defaults
@@ -384,32 +387,67 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         const Text(
           'Recent Activity',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: const Row(
-            children: [
-              Icon(Icons.info_outline, color: AppColors.textSecondary, size: 20),
-              SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  'Complete tasks to see activity here',
-                  style: TextStyle(color: AppColors.textSecondary),
+        if (_recentSessions.isEmpty && _todayItems.isEmpty)
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.info_outline, color: AppColors.textSecondary, size: 20),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text('Complete tasks to see activity here', style: TextStyle(color: AppColors.textSecondary)),
                 ),
-              ),
-            ],
-          ),
-        ),
+              ],
+            ),
+          )
+        else
+          ..._recentSessions.map((session) => Container(
+            margin: const EdgeInsets.only(bottom: 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 36, height: 36,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.access_time, color: AppColors.primary, size: 18),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Focus Session', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                      Text(
+                        '${session.durationMins} min • ${session.status}',
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  session.status == 'completed' ? Icons.check_circle : Icons.radio_button_unchecked,
+                  color: session.status == 'completed' ? AppColors.success : AppColors.textHint,
+                  size: 20,
+                ),
+              ],
+            ),
+          )),
       ],
     );
   }

@@ -160,6 +160,26 @@ class GamificationService {
     return PeerRoom.fromJson(room);
   }
 
+  Future<List<Map<String, dynamic>>> getPeerRoomMembers(String roomId) async {
+    final data = await _supabase
+        .from('peer_room_members')
+        .select('''
+          *,
+          users:user_id(full_name, email)
+        ''')
+        .eq('room_id', roomId)
+        .order('joined_at');
+    return (data as List).cast<Map<String, dynamic>>();
+  }
+
+  Future<void> leavePeerRoom(String userId, String roomId) async {
+    await _supabase
+        .from('peer_room_members')
+        .delete()
+        .eq('room_id', roomId)
+        .eq('user_id', userId);
+  }
+
   String _generateRoomCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rng = DateTime.now().millisecondsSinceEpoch;

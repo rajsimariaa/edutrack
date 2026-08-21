@@ -80,7 +80,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            onPressed: () {},
+            onPressed: () => _showEditProfileDialog(context, ref),
           ),
         ],
       ),
@@ -205,6 +205,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showEditProfileDialog(BuildContext context, WidgetRef ref) {
+    final auth = ref.read(authProvider);
+    final nameController = TextEditingController(text: auth.user?.userMetadata?['full_name'] ?? '');
+    final institutionController = TextEditingController(text: auth.profile?.institution ?? '');
+    final cityController = TextEditingController(text: auth.profile?.city ?? '');
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Profile'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Full Name'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: institutionController,
+                decoration: const InputDecoration(labelText: 'Institution'),
+              ),
+              const SizedBox(height: 12),
+              TextField(
+                controller: cityController,
+                decoration: const InputDecoration(labelText: 'City'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () async {
+              final userId = auth.user?.id;
+              if (userId == null) return;
+              final updates = <String, dynamic>{};
+              if (nameController.text.isNotEmpty) updates['full_name'] = nameController.text;
+              updates['institution'] = institutionController.text;
+              updates['city'] = cityController.text;
+              
+              await ref.read(authProvider.notifier).updateProfile(updates);
+              if (context.mounted) {
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
+                );
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
       ),
     );
   }

@@ -21,6 +21,8 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
   Map<int, String> _answers = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
+  int _remainingSeconds = 0;
+  bool _timerActive = false;
 
   @override
   void initState() {
@@ -33,9 +35,27 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       _test = await _testService.getTest(widget.testId);
       _questions = await _testService.getTestQuestions(widget.testId);
       setState(() => _isLoading = false);
+      if (_test != null && _test!.durationMins > 0) {
+        _remainingSeconds = _test!.durationMins * 60;
+        _timerActive = true;
+        _startTimer();
+      }
     } catch (e) {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _startTimer() {
+    Future.doWhile(() async {
+      await Future.delayed(const Duration(seconds: 1));
+      if (!_timerActive || _isSubmitted) return false;
+      if (_remainingSeconds > 0) {
+        setState(() => _remainingSeconds--);
+        return true;
+      }
+      _submitTest();
+      return false;
+    });
   }
 
   void _selectAnswer(int questionIndex, String option) {
@@ -132,6 +152,27 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       appBar: AppBar(
         title: Text(_test!.title),
         actions: [
+          if (_timerActive && _remainingSeconds > 0)
+            Padding(
+              padding: const EdgeInsets.only(right: 16),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: _remainingSeconds < 60 ? AppColors.error.withOpacity(0.1) : AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${(_remainingSeconds ~/ 60).toString().padLeft(2, '0')}:${(_remainingSeconds % 60).toString().padLeft(2, '0')}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _remainingSeconds < 60 ? AppColors.error : AppColors.primary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(

@@ -30,13 +30,13 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
     if (auth.user == null || auth.profile == null) return;
 
     try {
-      final exams = await _syllabusService.getExams();
-      if (exams.isEmpty) {
+      final exam = await _syllabusService.getExamForCategory(auth.profile!.examCategory);
+      if (exam == null) {
         setState(() => _isLoading = false);
         return;
       }
 
-      final subjects = await _syllabusService.getSubjects(exams.first.id);
+      final subjects = await _syllabusService.getSubjects(exam.id);
       final progress = <String, Map<String, double>>{};
 
       for (final subject in subjects) {

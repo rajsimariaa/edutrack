@@ -16,6 +16,8 @@ class ResourcesScreen extends ConsumerStatefulWidget {
 class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
   final _resourceService = ResourceService();
   List<Map<String, dynamic>> _pastPapers = [];
+  List<Map<String, dynamic>> _youtubeLinks = [];
+  String? _currentExamId;
   bool _isLoading = true;
 
   @override
@@ -29,9 +31,10 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
     if (auth.profile == null) return;
 
     try {
-      final exams = await SyllabusService().getExams();
-      if (exams.isNotEmpty) {
-        _pastPapers = await _resourceService.getPastPapers(exams.first.id);
+      final exam = await SyllabusService().getExamForCategory(auth.profile!.examCategory);
+      if (exam != null) {
+        _currentExamId = exam.id;
+        _pastPapers = await _resourceService.getPastPapers(exam.id);
       }
       setState(() => _isLoading = false);
     } catch (e) {
@@ -118,27 +121,58 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
   }
 
   Widget _buildYouTubeLinks() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHint),
-            const SizedBox(height: 16),
-            Text(
-              'YouTube Resources',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Browse your syllabus chapters to find curated video resources linked to each topic.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textHint),
-            ),
-          ],
+    if (_youtubeLinks.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(32),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHint),
+              SizedBox(height: 16),
+              Text('No YouTube links yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+              SizedBox(height: 8),
+              Text('YouTube links will appear as they are added to chapters', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textHint)),
+            ],
+          ),
         ),
-      ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: _youtubeLinks.length,
+      itemBuilder: (context, index) {
+        final link = _youtubeLinks[index];
+        return Card(
+          margin: const EdgeInsets.only(bottom: 12),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(16),
+            leading: Container(
+              width: 48, height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.play_circle, color: AppColors.error),
+            ),
+            title: Text(link['title'] ?? 'Untitled', style: const TextStyle(fontWeight: FontWeight.w600)),
+            subtitle: Text(link['channel_name'] ?? '', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.thumb_up, size: 16, color: AppColors.textHint),
+                const SizedBox(width: 4),
+                Text('${link['upvotes'] ?? 0}', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+              ],
+            ),
+            onTap: () async {
+              final url = link['video_url'];
+              if (url != null) await launchUrl(Uri.parse(url));
+            },
+          ),
+        );
+      },
     );
   }
 }

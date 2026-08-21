@@ -30,9 +30,9 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
     if (auth.user == null || auth.profile == null) return;
 
     try {
-      final exams = await SyllabusService().getExams();
-      if (exams.isNotEmpty) {
-        _tests = await _testService.getAvailableTests(exams.first.id);
+      final exam = await SyllabusService().getExamForCategory(auth.profile!.examCategory);
+      if (exam != null) {
+        _tests = await _testService.getAvailableTests(exam.id);
       }
       final userId = auth.user?.id;
       if (userId == null) return;

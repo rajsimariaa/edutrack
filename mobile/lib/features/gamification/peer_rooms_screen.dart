@@ -14,6 +14,7 @@ class PeerRoomsScreen extends ConsumerStatefulWidget {
 class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
   final _gamificationService = GamificationService();
   List<PeerRoom> _rooms = [];
+  List<Map<String, dynamic>> _currentRoomMembers = [];
   bool _isLoading = true;
 
   @override
@@ -105,13 +106,104 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
             Text('${room.examCategory} | Max ${room.maxMembers}', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
           ],
         ),
-        trailing: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: AppColors.success.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(room.code, style: TextStyle(color: AppColors.success, fontWeight: FontWeight.bold, fontSize: 12)),
+        trailing: Icon(Icons.chevron_right, color: AppColors.textHint),
+        onTap: () => _showRoomDetail(room),
+      ),
+    );
+  }
+
+  void _showRoomDetail(PeerRoom room) async {
+    final auth = ref.read(authProvider);
+    if (auth.user == null) return;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => FutureBuilder<List<Map<String, dynamic>>>(
+          future: _gamificationService.getPeerRoomMembers(room.id),
+          builder: (context, snapshot) {
+            final members = snapshot.data ?? [];
+            return Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Container(
+                      width: 40, height: 4,
+                      decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(room.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                            Text('Code: ${room.code}', style: TextStyle(color: AppColors.textSecondary)),
+                          ],
+                        ),
+                      ),
+                      if (members.any((m) => (m['user_id'] as String) == auth.user?.id))
+                        TextButton(
+                          onPressed: () async {
+                            await _gamificationService.leavePeerRoom(auth.user!.id, room.id);
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              _loadData();
+                            }
+                          },
+                          child: const Text('Leave Room', style: TextStyle(color: AppColors.error)),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${members.length} Members', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: ListView.builder(
+                      controller: scrollController,
+                      itemCount: members.length,
+                      itemBuilder: (context, index) {
+                        final member = members[index];
+                        final user = member['users'] as Map<String, dynamic>?;
+                        final role = member['role'] ?? 'member';
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            child: Text(
+                              ((user?['full_name'] as String?) ?? 'U')[0].toUpperCase(),
+                              style: TextStyle(color: AppColors.primary),
+                            ),
+                          ),
+                          title: Text(user?['full_name'] ?? 'Unknown'),
+                          subtitle: Text(user?['email'] ?? ''),
+                          trailing: role == 'admin'
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.primary.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text('Admin', style: TextStyle(color: AppColors.primary, fontSize: 11, fontWeight: FontWeight.w600)),
+                                )
+                              : null,
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
