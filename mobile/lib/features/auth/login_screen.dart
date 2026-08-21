@@ -38,7 +38,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final auth = ref.watch(authProvider);
 
     ref.listen<AuthState>(authProvider, (prev, next) {
-      if (next.error != null) {
+      if (next.isAuthenticated && next.profile != null) {
+        context.go('/home');
+      } else if (next.isAuthenticated && next.profile == null) {
+        context.go('/onboarding');
+      } else if (next.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.error!), backgroundColor: AppColors.error),
         );

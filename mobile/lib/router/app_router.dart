@@ -21,27 +21,42 @@ import '../features/profile/profile_screen.dart';
 import '../features/focus/habits_screen.dart';
 import '../features/gamification/peer_rooms_screen.dart';
 
+class AuthRefreshNotifier extends ChangeNotifier {
+  void refresh() => notifyListeners();
+}
+
+final authRefreshProvider = Provider<AuthRefreshNotifier>((ref) {
+  final notifier = AuthRefreshNotifier();
+  ref.listen<AuthState>(authProvider, (_, _) => notifier.refresh());
+  return notifier;
+});
+
 final routerProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authProvider);
+  final authRefresh = ref.watch(authRefreshProvider);
 
   return GoRouter(
     initialLocation: '/login',
+    refreshListenable: authRefresh,
     redirect: (context, state) {
+      final authState = ref.read(authProvider);
       final isLoggedIn = authState.isAuthenticated;
-      final isOnboarding = state.matchedLocation == '/onboarding';
+      final location = state.matchedLocation;
+      final isOnboarding = location == '/onboarding';
+      final isAuthPage = location == '/login' || location == '/register';
 
       if (!isLoggedIn) {
-        return state.matchedLocation == '/login' ||
-                state.matchedLocation == '/register'
-            ? null
-            : '/login';
+        return isAuthPage ? null : '/login';
       }
 
       if (isLoggedIn && authState.profile == null && !isOnboarding) {
         return '/onboarding';
       }
 
-      if (isLoggedIn && isOnboarding && authState.profile != null) {
+      if (isLoggedIn && authState.profile != null && isOnboarding) {
+        return '/home';
+      }
+
+      if (isLoggedIn && authState.profile != null && isAuthPage) {
         return '/home';
       }
 
