@@ -1,0 +1,41 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+pubspec.lock
+
+# Node (if used for tooling)
+node_modules/
+npm-debug.log
+
+# Python (if used for scripts)
+__pycache__/
+*.pyc
+venv/
+
+# Compiled
+*.o
+*.a
+*.so
+*.dylib
+
+# Database dumps (don't commit real data)
+*.sql.dump

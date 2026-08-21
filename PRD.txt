@@ -1,0 +1,58 @@
+# Product Requirement Document (PRD) — Updated
+
+## 📌 1. Document Overview
+* **Product Name:** EduTrack (Placeholder)
+* **Document Version:** 1.2.0
+* **Target Audience:** Aspirants of highly competitive professional and entrance exams (CA, CS, CMA, CFA, JEE, NEET, etc.).
+* **Core Objective:** To transform vast, intimidating exam syllabi into highly actionable, gamified, and tracked daily workflows while providing peer benchmarking and performance deep-dives.
+
+---
+
+## 📌 2. User Roles & Personas
+* **The Solitary Aspirant:** Needs absolute focus, structured timetables, habit loops, and structured repositories (past papers, video links) to study independently.
+* **The Competitive Peer:** Needs community accountability, category-specific leaderboards, and badges to showcase elite status.
+
+---
+
+## 📌 3. Epics & Functional Requirements
+
+### ➡️ Epic 0: User Identity & Profile Lifecycle
+* **Gamified Onboarding Progress Ring:** The user's profile avatar is wrapped within a dynamic circular progress path indicating Profile Completion Percentage (0% to 100%).
+* **Completion Weighted Matrix:** Calculated across credentials (20%), academic target selection (30%), workflow baselines (25%), and social setup (25%).
+* **Digital Badge Showcase Grid (NEW):** A dedicated shelf embedded inside the profile terminal displaying unlocked programmatic badges. Users can tap badges to view criteria info, date unlocked, and rarity tier.
+* **Featured Badge Pinning (NEW):** Allows users to pin up to 3 showcase badges directly under their name, visible on public leaderboards and peer rooms.
+
+### ➡️ Epic 1: Syllabus Onboarding & Progress Matrix
+* **Dynamic Syllabus Fetching:** Multi-tiered hierarchy: `Subject -> Module -> Chapter -> Topic`.
+* **Knowledge-Level Mapping:** Tri-state classification: *Not Started (Red)*, *In Progress (Yellow)*, *Mastered (Green)*.
+* **Progress Aggregation:** Visual indicators mapping percentage completion at the Subject and macro Exam level.
+
+### ➡️ Epic 1.5: Programmatic Milestone & Badge Engine (NEW)
+* **Asynchronous Milestone Evaluator:** Runs transactional validation checks against student activity metrics to unlock specific badge tiers:
+  * **Syllabus Execution Milestones:** `First Step` (Syllabus initialized), `Quarter Master` (25% Syllabus Mastered), `Half-Way Hero` (50% Mastered), `Syllabus Conqueror` (100% Mastered for chosen category).
+  * **Consistency & Habit Milestones:** `7-Day Burner` (7-day heatmap streak), `Centurion` (100 hours of tracked focus time), `Early Bird` (Woke up and tracked study by 5 AM for 5 days straight).
+  * **Academic Excellence Milestones:** `Podium Finisher` (Ranked Top 3 in Weekly Mock Tests), `Flawless` (100% score on a Chapter diagnostic test).
+* **In-App Celebration Modals:** Instant custom confetti animations triggered upon achieving a milestone, prompting immediate action to view the newly added badge in the profile shelf.
+
+### ➡️ Epic 2: Adaptive Schedule & Automated Timetable Maker
+* **The AI-Driven Schedule Engine:** Outputs customized, day-by-day study roadmaps.
+* **Dynamic Rescheduling:** Automatically shifts remaining backlogs across surviving days if a user misses a milestone.
+
+### ➡️ Epic 3: Weekly Dynamic Diagnostic Tests
+* **Category-Isolated Testing:** Weekly mock tests matching strict marking schemes.
+* **Comparative Percentile Analytics:** Displays real-time cohort statistics.
+
+### ➡️ Epic 4: Integrated Focus & Productivity Suite
+* **Customizable Pomodoro Timer:** Configurable focus blocks tied directly to chapters.
+* **Handy Markdown Notes Engine:** In-app rich text editor linked explicitly to the active chapter.
+* **Curated YouTube Deep Links:** Aggregates top-rated, community-vouched educational YouTube videos.
+
+### ➡️ Epic 5: Gamification, Social Compete & Analytics
+* **GitHub-Style Heatmap Streaks:** Calendar widget tracking daily task consistency.
+* **Isolate Leaderboards:** High-performance ranking tables strictly restricted to the user's exam category. **Leaderboards display pinned badges next to the user's name.**
+* **Peer Rooms:** Closed invite-only study circles. Friends can inspect each other's full profile badge shelves to drive peer motivation.
+* **Progress Sharing Canvas:** Programmatic generation of "Shareable Progress Cards" formatting active streaks, milestones hit, and newly unlocked badges for social cross-posting.
+
+### ➡️ Epic 6: Resource Vault & Habit Engine
+* **Past Papers Repository:** Structured, downloadable document archive categorized by year and term.
+* **Discipline Stack:** Customizable check-ins for non-negotiable exam habits.
