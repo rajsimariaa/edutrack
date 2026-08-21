@@ -32,7 +32,9 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
 
     try {
       final topics = await _syllabusService.getTopics(widget.chapterId);
-      final userProgress = await _syllabusService.getUserProgress(auth.user!.id);
+      final userId = auth.user?.id;
+      if (userId == null) return;
+      final userProgress = await _syllabusService.getUserProgress(userId);
       final progressMap = <String, UserTopicProgress>{};
       for (final p in userProgress) {
         progressMap[p.topicId] = p;

@@ -89,8 +89,11 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       }
     }
 
+    final userId = auth.user?.id;
+    if (userId == null) return;
+
     await _testService.submitTest(
-      userId: auth.user!.id,
+      userId: userId,
       testId: widget.testId,
       score: totalScore,
       totalCorrect: correct,

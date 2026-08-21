@@ -82,7 +82,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
     }
 
     await GamificationService().updateHeatmapEntry(
-      userId: auth.user!.id,
+      userId: auth.user?.id ?? '',
       date: DateTime.now(),
       focusMins: _totalSeconds ~/ 60,
     );

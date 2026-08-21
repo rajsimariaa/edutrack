@@ -34,7 +34,9 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
       if (exams.isNotEmpty) {
         _tests = await _testService.getAvailableTests(exams.first.id);
       }
-      _submissions = await _testService.getUserSubmissions(auth.user!.id);
+      final userId = auth.user?.id;
+      if (userId == null) return;
+      _submissions = await _testService.getUserSubmissions(userId);
       setState(() => _isLoading = false);
     } catch (e) {
       setState(() => _isLoading = false);

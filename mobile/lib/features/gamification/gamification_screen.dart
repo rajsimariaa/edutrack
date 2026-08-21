@@ -35,9 +35,11 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
 
     try {
       _allBadges = await _badgeService.getAllBadges();
-      _userBadges = await _badgeService.getUserBadges(auth.user!.id);
+      final userId = auth.user?.id;
+      if (userId == null) return;
+      _userBadges = await _badgeService.getUserBadges(userId);
       _heatmap = await GamificationService().getHeatmapData(
-        auth.user!.id,
+        userId,
         startDate: DateTime.now().subtract(const Duration(days: 365)),
       );
       _computeStreaks();

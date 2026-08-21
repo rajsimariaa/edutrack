@@ -27,7 +27,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
 
   Future<void> _loadData() async {
     final auth = ref.read(authProvider);
-    if (auth.profile == null) return;
+    if (auth.user == null || auth.profile == null) return;
 
     try {
       final exams = await _syllabusService.getExams();
@@ -41,7 +41,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
 
       for (final subject in subjects) {
         progress[subject.id] = await _syllabusService.getSubjectProgress(
-          auth.user!.id,
+          auth.user?.id ?? '',
           subject.id,
         );
       }
