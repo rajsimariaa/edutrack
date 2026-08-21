@@ -20,6 +20,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   int _remainingSeconds = 25 * 60;
   int _totalSeconds = 25 * 60;
   Timer? _timer;
+  String? _currentSessionId;
 
   @override
   void dispose() {
@@ -27,27 +28,43 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
     super.dispose();
   }
 
-  void _startTimer() {
+  Future<void> _startTimer() async {
+    final auth = ref.read(authProvider);
+    if (auth.user == null) return;
+
+    final session = await _focusService.startPomodoro(
+      userId: auth.user!.id,
+      durationMins: _totalSeconds ~/ 60,
+    );
+    _currentSessionId = session.id;
+
     setState(() => _isRunning = true);
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_remainingSeconds > 0) {
           _remainingSeconds--;
         } else {
-          _stopTimer();
           _completeSession();
         }
       });
     });
   }
 
-  void _pauseTimer() {
+  Future<void> _pauseTimer() async {
     _timer?.cancel();
+    if (_currentSessionId != null) {
+      await _focusService.completePomodoro(_currentSessionId!);
+      _currentSessionId = null;
+    }
     setState(() => _isRunning = false);
   }
 
-  void _stopTimer() {
+  Future<void> _stopTimer() async {
     _timer?.cancel();
+    if (_currentSessionId != null) {
+      await _focusService.completePomodoro(_currentSessionId!);
+      _currentSessionId = null;
+    }
     setState(() {
       _isRunning = false;
       _remainingSeconds = _totalSeconds;
@@ -55,12 +72,26 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   }
 
   Future<void> _completeSession() async {
+    _timer?.cancel();
     final auth = ref.read(authProvider);
     if (auth.user == null) return;
-    await _focusService.startPomodoro(
+
+    if (_currentSessionId != null) {
+      await _focusService.completePomodoro(_currentSessionId!);
+      _currentSessionId = null;
+    }
+
+    await GamificationService().updateHeatmapEntry(
       userId: auth.user!.id,
-      durationMins: _totalSeconds ~/ 60,
+      date: DateTime.now(),
+      focusMins: _totalSeconds ~/ 60,
     );
+
+    setState(() {
+      _isRunning = false;
+      _remainingSeconds = _totalSeconds;
+    });
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Focus session completed!')),
@@ -151,7 +182,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                 children: [
                   _buildQuickAction('Notes', Icons.note_add_outlined, () => context.go('/focus/notes')),
                   _buildQuickAction('Badges', Icons.emoji_events_outlined, () => context.go('/gamification')),
-                  _buildQuickAction('Habits', Icons.checklist_outlined, () {}),
+                  _buildQuickAction('Habits', Icons.checklist_outlined, () => context.go('/focus/habits')),
                 ],
               ),
             ],

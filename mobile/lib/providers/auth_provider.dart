@@ -105,6 +105,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await _authService.signOut();
   }
 
+  Future<void> resetPassword(String email) async {
+    try {
+      await _authService.resetPassword(email);
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+    }
+  }
+
   Future<void> createProfile({
     required String examCategory,
     int? targetYear,

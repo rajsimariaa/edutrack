@@ -7,11 +7,71 @@ import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
 
-class ProfileScreen extends ConsumerWidget {
+class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends ConsumerState<ProfileScreen> {
+  int _badgeCount = 0;
+  int _streakDays = 0;
+  double _focusHours = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final auth = ref.read(authProvider);
+    final userId = auth.user?.id;
+    if (userId == null) return;
+
+    try {
+      final results = await Future.wait([
+        BadgeService().getUserBadges(userId),
+        GamificationService().getHeatmapData(
+          userId,
+          startDate: DateTime.now().subtract(const Duration(days: 90)),
+        ),
+        FocusService().getTotalFocusHours(userId),
+      ]);
+
+      if (!mounted) return;
+      setState(() {
+        _badgeCount = (results[0] as List).length;
+        _streakDays = _computeStreak(results[1] as List<HeatmapEntry>);
+        _focusHours = results[2] as double;
+      });
+    } catch (e) {
+      // Silently handle errors - data stays at defaults
+    }
+  }
+
+  int _computeStreak(List<HeatmapEntry> heatmap) {
+    if (heatmap.isEmpty) return 0;
+    final today = DateTime.now();
+    int streak = 0;
+    for (int i = 0; i < 365; i++) {
+      final date = today.subtract(Duration(days: i));
+      final hasEntry = heatmap.any((h) =>
+          h.activityDate.year == date.year &&
+          h.activityDate.month == date.month &&
+          h.activityDate.day == date.day);
+      if (hasEntry) {
+        streak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
 
     return Scaffold(
@@ -109,11 +169,11 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildStatsRow(AuthState auth) {
     return Row(
       children: [
-        _buildStatCard('Badges', '8', Icons.emoji_events, AppColors.badge),
+        _buildStatCard('Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
         const SizedBox(width: 12),
-        _buildStatCard('Streak', '5d', Icons.local_fire_department, AppColors.streak),
+        _buildStatCard('Streak', '${_streakDays}d', Icons.local_fire_department, AppColors.streak),
         const SizedBox(width: 12),
-        _buildStatCard('Hours', '12.5', Icons.access_time, AppColors.primary),
+        _buildStatCard('Hours', '${_focusHours.toStringAsFixed(1)}', Icons.access_time, AppColors.primary),
       ],
     );
   }
@@ -173,7 +233,7 @@ class ProfileScreen extends ConsumerWidget {
           _buildMenuItem(
             Icons.group_outlined,
             'Peer Rooms',
-            () {},
+            () => context.go('/profile/peer-rooms'),
           ),
           const Divider(height: 1),
           _buildMenuItem(

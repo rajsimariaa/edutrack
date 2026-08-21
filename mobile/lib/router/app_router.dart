@@ -8,6 +8,7 @@ import '../features/auth/onboarding_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/syllabus/syllabus_screen.dart';
 import '../features/syllabus/chapter_screen.dart';
+import '../features/syllabus/module_screen.dart';
 import '../features/schedule/schedule_screen.dart';
 import '../features/tests/tests_screen.dart';
 import '../features/tests/test_detail_screen.dart';
@@ -17,6 +18,8 @@ import '../features/gamification/gamification_screen.dart';
 import '../features/gamification/leaderboard_screen.dart';
 import '../features/resources/resources_screen.dart';
 import '../features/profile/profile_screen.dart';
+import '../features/focus/habits_screen.dart';
+import '../features/gamification/peer_rooms_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
@@ -92,7 +95,29 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: '/profile',
             builder: (context, state) => const ProfileScreen(),
           ),
+          GoRoute(
+            path: '/focus/habits',
+            builder: (context, state) => const HabitsScreen(),
+          ),
+          GoRoute(
+            path: '/profile/peer-rooms',
+            builder: (context, state) => const PeerRoomsScreen(),
+          ),
         ],
+      ),
+      GoRoute(
+        path: '/syllabus/modules/:subjectId/:subjectName',
+        builder: (context, state) => ModuleScreen(
+          subjectId: state.pathParameters['subjectId']!,
+          subjectName: Uri.decodeComponent(state.pathParameters['subjectName']!),
+        ),
+      ),
+      GoRoute(
+        path: '/syllabus/chapter/:chapterId/:chapterName',
+        builder: (context, state) => ChapterScreen(
+          chapterId: state.pathParameters['chapterId']!,
+          chapterName: Uri.decodeComponent(state.pathParameters['chapterName']!),
+        ),
       ),
       GoRoute(
         path: '/syllabus/chapter/:chapterId',

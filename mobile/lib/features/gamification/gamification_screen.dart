@@ -19,6 +19,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
   List<models.UserBadge> _userBadges = [];
   List<models.HeatmapEntry> _heatmap = [];
   bool _isLoading = true;
+  int _currentStreak = 0;
+  int _longestStreak = 0;
+  int _totalDays = 0;
 
   @override
   void initState() {
@@ -37,10 +40,53 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
         auth.user!.id,
         startDate: DateTime.now().subtract(const Duration(days: 365)),
       );
+      _computeStreaks();
       setState(() => _isLoading = false);
     } catch (e) {
       setState(() => _isLoading = false);
     }
+  }
+
+  void _computeStreaks() {
+    _totalDays = _heatmap.length;
+    if (_heatmap.isEmpty) return;
+
+    final sorted = List<models.HeatmapEntry>.from(_heatmap)
+      ..sort((a, b) => a.activityDate.compareTo(b.activityDate));
+
+    final today = DateTime.now();
+    _currentStreak = 0;
+    for (int i = 0; i < 365; i++) {
+      final date = today.subtract(Duration(days: i));
+      final hasEntry = sorted.any((h) =>
+          h.activityDate.year == date.year &&
+          h.activityDate.month == date.month &&
+          h.activityDate.day == date.day);
+      if (hasEntry) {
+        _currentStreak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+
+    _longestStreak = 0;
+    int tempStreak = 0;
+    DateTime? prevDate;
+    for (final entry in sorted) {
+      if (prevDate != null) {
+        final diff = entry.activityDate.difference(prevDate).inDays;
+        if (diff == 1) {
+          tempStreak++;
+        } else {
+          _longestStreak = _longestStreak > tempStreak ? _longestStreak : tempStreak;
+          tempStreak = 1;
+        }
+      } else {
+        tempStreak = 1;
+      }
+      prevDate = entry.activityDate;
+    }
+    _longestStreak = _longestStreak > tempStreak ? _longestStreak : tempStreak;
   }
 
   @override
@@ -88,9 +134,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildStreakStat('Current Streak', '5 days', AppColors.streak),
-                  _buildStreakStat('Longest Streak', '12 days', AppColors.primary),
-                  _buildStreakStat('Total Days', '45 days', AppColors.accent),
+                  _buildStreakStat('Current Streak', '$_currentStreak days', AppColors.streak),
+                  _buildStreakStat('Longest Streak', '$_longestStreak days', AppColors.primary),
+                  _buildStreakStat('Total Days', '$_totalDays days', AppColors.accent),
                 ],
               ),
               const SizedBox(height: 16),
@@ -293,6 +339,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
   }
 
   void _showBadgeDetails(models.Badge badge, bool isUnlocked) {
+    final isPinned = _userBadges.any((b) => b.badgeId == badge.id && b.isPinned);
+    final pinnedCount = _userBadges.where((b) => b.isPinned).length;
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Padding(
@@ -348,6 +397,37 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
               style: TextStyle(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 24),
+            if (isUnlocked)
+              Center(
+                child: isPinned
+                    ? OutlinedButton(
+                        onPressed: () async {
+                          final auth = ref.read(authProvider);
+                          if (auth.user == null) return;
+                          await _badgeService.unpinBadge(auth.user!.id, badge.id);
+                          Navigator.pop(context);
+                          _loadData();
+                        },
+                        child: const Text('Unpin'),
+                      )
+                    : pinnedCount < 3
+                        ? ElevatedButton(
+                            onPressed: () async {
+                              final auth = ref.read(authProvider);
+                              if (auth.user == null) return;
+                              await _badgeService.pinBadge(
+                                auth.user!.id,
+                                badge.id,
+                                pinnedCount + 1,
+                              );
+                              Navigator.pop(context);
+                              _loadData();
+                            },
+                            child: const Text('Pin'),
+                          )
+                        : null,
+              ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

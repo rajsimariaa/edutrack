@@ -91,9 +91,15 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               ),
             ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
+        onPressed: () {
+          if (_activeSchedule != null) {
+            _showAddTaskDialog();
+          } else {
+            _showCreateScheduleDialog();
+          }
+        },
         icon: const Icon(Icons.add),
-        label: const Text('Add Task'),
+        label: Text(_activeSchedule != null ? 'Add Task' : 'Create Schedule'),
       ),
     );
   }
@@ -239,6 +245,86 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               value: 'reschedule',
               child: Text('Reschedule'),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCreateScheduleDialog() {
+    final titleController = TextEditingController(text: 'My Study Plan');
+    final now = DateTime.now();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16, right: 16, top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('New Schedule', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            TextField(controller: titleController, decoration: const InputDecoration(hintText: 'Schedule title')),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                final auth = ref.read(authProvider);
+                if (auth.user == null || titleController.text.isEmpty) return;
+                await _scheduleService.createSchedule(
+                  userId: auth.user!.id,
+                  title: titleController.text,
+                  startDate: now,
+                  endDate: now.add(const Duration(days: 30)),
+                );
+                Navigator.pop(context);
+                _loadData();
+              },
+              child: const Text('Create Schedule'),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddTaskDialog() {
+    if (_activeSchedule == null) return;
+    final titleController = TextEditingController();
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16, right: 16, top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Add Task', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            TextField(controller: titleController, decoration: const InputDecoration(hintText: 'Task title')),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                if (titleController.text.isEmpty) return;
+                await _scheduleService.createScheduleItem(
+                  scheduleId: _activeSchedule!.id,
+                  title: titleController.text,
+                  scheduledDate: DateTime.now(),
+                );
+                Navigator.pop(context);
+                _loadData();
+              },
+              child: const Text('Add Task'),
+            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),

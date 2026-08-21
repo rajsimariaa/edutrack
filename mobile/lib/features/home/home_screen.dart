@@ -3,15 +3,85 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import '../../providers/auth_provider.dart';
+import '../../services/services.dart';
+import '../../models/models.dart';
 import '../../theme/app_theme.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  double _focusHours = 0.0;
+  int _badgeCount = 0;
+  int _streakDays = 0;
+  List<ScheduleItem> _todayItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final auth = ref.read(authProvider);
+    final userId = auth.user?.id;
+    if (userId == null) return;
+
+    try {
+      final results = await Future.wait([
+        FocusService().getTotalFocusHours(userId),
+        BadgeService().getUserBadges(userId),
+        GamificationService().getHeatmapData(
+          userId,
+          startDate: DateTime.now().subtract(const Duration(days: 90)),
+        ),
+        _loadTodayItems(userId),
+      ]);
+
+      if (!mounted) return;
+      setState(() {
+        _focusHours = results[0] as double;
+        _badgeCount = (results[1] as List).length;
+        _streakDays = _computeStreak(results[2] as List<HeatmapEntry>);
+        _todayItems = results[3] as List<ScheduleItem>;
+      });
+    } catch (e) {
+      // Silently handle errors - data stays at defaults
+    }
+  }
+
+  Future<List<ScheduleItem>> _loadTodayItems(String userId) async {
+    final schedule = await ScheduleService().getActiveSchedule(userId);
+    if (schedule == null) return [];
+    return ScheduleService().getScheduleItems(schedule.id, date: DateTime.now());
+  }
+
+  int _computeStreak(List<HeatmapEntry> heatmap) {
+    if (heatmap.isEmpty) return 0;
+    final today = DateTime.now();
+    int streak = 0;
+    for (int i = 0; i < 365; i++) {
+      final date = today.subtract(Duration(days: i));
+      final hasEntry = heatmap.any((h) =>
+          h.activityDate.year == date.year &&
+          h.activityDate.month == date.month &&
+          h.activityDate.day == date.day);
+      if (hasEntry) {
+        streak++;
+      } else if (i > 0) {
+        break;
+      }
+    }
+    return streak;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
-    final profile = auth.profile;
 
     return Scaffold(
       appBar: AppBar(
@@ -30,7 +100,7 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () async {},
+        onRefresh: () async => await _loadData(),
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.all(16),
@@ -118,11 +188,11 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildQuickStats(BuildContext context) {
     return Row(
       children: [
-        _buildStatCard('Current Streak', '5 days', Icons.local_fire_department, AppColors.streak),
+        _buildStatCard('Current Streak', '$_streakDays days', Icons.local_fire_department, AppColors.streak),
         const SizedBox(width: 12),
-        _buildStatCard('Focus Hours', '12.5h', Icons.access_time, AppColors.primary),
+        _buildStatCard('Focus Hours', '${_focusHours.toStringAsFixed(1)}h', Icons.access_time, AppColors.primary),
         const SizedBox(width: 12),
-        _buildStatCard('Badges', '8', Icons.emoji_events, AppColors.badge),
+        _buildStatCard('Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
       ],
     );
   }
@@ -190,15 +260,26 @@ class HomeScreen extends ConsumerWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: AppColors.border),
           ),
-          child: Column(
-            children: [
-              _buildScheduleItem('Math Revision', '9:00 AM - 10:30 AM', true),
-              const Divider(height: 24),
-              _buildScheduleItem('Physics Practice', '11:00 AM - 12:30 PM', false),
-              const Divider(height: 24),
-              _buildScheduleItem('Mock Test', '2:00 PM - 4:00 PM', false),
-            ],
-          ),
+          child: _todayItems.isEmpty
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Text(
+                    'No schedule items for today',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
+                )
+              : Column(
+                  children: [
+                    for (int i = 0; i < _todayItems.length; i++) ...[
+                      if (i > 0) const Divider(height: 24),
+                      _buildScheduleItem(
+                        _todayItems[i].title,
+                        '${_todayItems[i].startTime ?? ''} - ${_todayItems[i].endTime ?? ''}',
+                        _todayItems[i].status == ScheduleItemStatus.completed,
+                      ),
+                    ],
+                  ],
+                ),
         ),
       ],
     );
@@ -309,72 +390,27 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _buildActivityItem(
-          'Completed "Quadratic Equations"',
-          '2 hours ago',
-          Icons.check_circle,
-          AppColors.success,
-        ),
-        const SizedBox(height: 8),
-        _buildActivityItem(
-          'Unlocked "7-Day Burner" badge',
-          'Yesterday',
-          Icons.emoji_events,
-          AppColors.badge,
-        ),
-        const SizedBox(height: 8),
-        _buildActivityItem(
-          'Scored 85% in Mock Test',
-          '2 days ago',
-          Icons.trending_up,
-          AppColors.primary,
+        Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: const Row(
+            children: [
+              Icon(Icons.info_outline, color: AppColors.textSecondary, size: 20),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Complete tasks to see activity here',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActivityItem(String title, String time, IconData icon, Color color) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  time,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

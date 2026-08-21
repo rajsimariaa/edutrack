@@ -77,20 +77,22 @@ class FocusService {
 
   Future<Note> createNote({
     required String userId,
-    required String chapterId,
+    String? chapterId,
     String? topicId,
     String? title,
     String contentMd = '',
   }) async {
+    final insertData = <String, dynamic>{
+      'user_id': userId,
+      'topic_id': topicId,
+      'title': title,
+      'content_md': contentMd,
+    };
+    if (chapterId != null) insertData['chapter_id'] = chapterId;
+
     final data = await _supabase
         .from('notes')
-        .insert({
-          'user_id': userId,
-          'chapter_id': chapterId,
-          'topic_id': topicId,
-          'title': title,
-          'content_md': contentMd,
-        })
+        .insert(insertData)
         .select()
         .single();
     return Note.fromJson(data);

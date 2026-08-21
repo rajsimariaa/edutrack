@@ -119,21 +119,25 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
 
   Widget _buildYouTubeLinks() {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHint),
-          const SizedBox(height: 16),
-          Text(
-            'YouTube links appear here',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Videos linked to chapters will show up here',
-            style: TextStyle(color: AppColors.textHint, fontSize: 12),
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHint),
+            const SizedBox(height: 16),
+            Text(
+              'YouTube Resources',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Browse your syllabus chapters to find curated video resources linked to each topic.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppColors.textHint),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -114,14 +114,18 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
+        onTap: () => _showEditNoteDialog(note),
         trailing: PopupMenuButton<String>(
           onSelected: (value) {
-            if (value == 'delete') {
+            if (value == 'edit') {
+              _showEditNoteDialog(note);
+            } else if (value == 'delete') {
               _focusService.deleteNote(note.id);
               _loadNotes();
             }
           },
           itemBuilder: (context) => [
+            const PopupMenuItem(value: 'edit', child: Text('Edit')),
             const PopupMenuItem(value: 'delete', child: Text('Delete')),
           ],
         ),
@@ -169,7 +173,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 if (auth.user == null) return;
                 await _focusService.createNote(
                   userId: auth.user!.id,
-                  chapterId: 'default',
+                  chapterId: null,
                   title: titleController.text,
                   contentMd: contentController.text,
                 );
@@ -177,6 +181,59 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
                 _loadNotes();
               },
               child: const Text('Save Note'),
+            ),
+            const SizedBox(height: 16),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditNoteDialog(Note note) {
+    final titleController = TextEditingController(text: note.title ?? '');
+    final contentController = TextEditingController(text: note.contentMd);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 16,
+          right: 16,
+          top: 16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Edit Note',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(hintText: 'Title'),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: contentController,
+              maxLines: 5,
+              decoration: const InputDecoration(hintText: 'Write your note...'),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                await _focusService.updateNote(
+                  noteId: note.id,
+                  title: titleController.text,
+                  contentMd: contentController.text,
+                );
+                Navigator.pop(context);
+                _loadNotes();
+              },
+              child: const Text('Update Note'),
             ),
             const SizedBox(height: 16),
           ],

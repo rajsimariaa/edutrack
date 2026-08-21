@@ -7,7 +7,8 @@ import '../../theme/app_theme.dart';
 
 class ChapterScreen extends ConsumerStatefulWidget {
   final String chapterId;
-  const ChapterScreen({super.key, required this.chapterId});
+  final String chapterName;
+  const ChapterScreen({super.key, required this.chapterId, this.chapterName = 'Chapter'});
 
   @override
   ConsumerState<ChapterScreen> createState() => _ChapterScreenState();
@@ -63,7 +64,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Chapter Topics'),
+        title: Text(widget.chapterName),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

@@ -131,7 +131,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
                               ),
                             ),
                             trailing: const Icon(Icons.chevron_right),
-                            onTap: () => context.go('/syllabus/chapter/${subject.id}'),
+                            onTap: () => context.go('/syllabus/modules/${subject.id}/${Uri.encodeComponent(subject.name)}'),
                           ),
                         );
                       },
