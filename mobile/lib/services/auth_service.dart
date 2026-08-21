@@ -17,6 +17,7 @@ class AuthService {
       email: email,
       password: password,
       data: {'full_name': fullName},
+      emailRedirectTo: 'io.supabase.edutrack://login-callback/',
     );
     return response;
   }

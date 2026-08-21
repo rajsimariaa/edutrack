@@ -84,6 +84,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         password: password,
         fullName: fullName,
       );
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
@@ -96,6 +97,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _authService.signIn(email: email, password: password);
+      state = state.copyWith(isLoading: false);
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }

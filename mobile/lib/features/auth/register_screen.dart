@@ -47,6 +47,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.error!), backgroundColor: AppColors.error),
         );
+      } else if (prev?.isLoading == true && next.isLoading == false && next.error == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created! Check your email to confirm, then sign in.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        context.go('/login');
       }
     });
 
