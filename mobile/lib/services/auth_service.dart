@@ -58,15 +58,24 @@ class AuthService {
     String? institution,
     String? city,
   }) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) throw Exception('No authenticated user');
+
+    await _supabase.from('users').upsert({
+      'id': userId,
+      'email': user.email ?? '',
+      'full_name': user.userMetadata?['full_name'] ?? '',
+    }, onConflict: 'id');
+
     final data = await _supabase
         .from('user_profiles')
-        .insert({
+        .upsert({
           'user_id': userId,
           'exam_category': examCategory,
           'target_year': targetYear,
           'institution': institution,
           'city': city,
-        })
+        }, onConflict: 'user_id')
         .select()
         .single();
     return UserProfile.fromJson(data);
