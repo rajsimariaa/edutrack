@@ -39,3 +39,7 @@ venv/
 
 # Database dumps (don't commit real data)
 *.sql.dump
+
+# Supabase local dev
+supabase/.temp/
+supabase/.branches/
