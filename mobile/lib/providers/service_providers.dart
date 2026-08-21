@@ -1,10 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/services.dart';
 
-final supabaseServiceProvider = Provider<SupabaseService>((ref) {
-  return SupabaseService.instance;
-});
-
 final authServiceProvider = Provider<AuthService>((ref) {
   return AuthService();
 });

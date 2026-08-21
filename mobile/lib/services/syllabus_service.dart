@@ -3,7 +3,7 @@ import 'supabase_service.dart';
 import '../models/models.dart';
 
 class SyllabusService {
-  final _supabase = SupabaseService.instance.client;
+  final _supabase = SupabaseService.client;
 
   Future<List<Exam>> getExams() async {
     final data = await _supabase

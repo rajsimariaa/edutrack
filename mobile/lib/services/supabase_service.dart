@@ -1,32 +1,42 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../config/env.dart';
 
 class SupabaseService {
-  static SupabaseService? _instance;
-  late final SupabaseClient _client;
+  static bool _initialized = false;
 
-  SupabaseService._() {
-    _client = SupabaseClient(
-      Env.supabaseUrl,
-      Env.supabaseAnonKey,
-    );
+  static bool get isInitialized => _initialized;
+
+  static SupabaseClient get client {
+    if (!_initialized) {
+      throw Exception('Supabase not initialized');
+    }
+    return Supabase.instance.client;
   }
-
-  static SupabaseService get instance {
-    _instance ??= SupabaseService._();
-    return _instance!;
-  }
-
-  SupabaseClient get client => _client;
 
   static Future<void> initialize() async {
+    if (_initialized) return;
+
+    final url = Env.supabaseUrl;
+    final anonKey = Env.supabaseAnonKey;
+
+    if (url.isEmpty || anonKey.isEmpty) {
+      throw Exception('Supabase URL or anon key is empty. Check assets/.env');
+    }
+
+    debugPrint('Supabase initializing with URL: $url');
+    debugPrint('Anon key prefix: ${anonKey.substring(0, anonKey.length > 15 ? 15 : anonKey.length)}...');
+
     await Supabase.initialize(
-      url: Env.supabaseUrl,
-      anonKey: Env.supabaseAnonKey,
+      url: url,
+      anonKey: anonKey,
     );
+
+    _initialized = true;
+    debugPrint('Supabase initialized successfully');
   }
 
-  User? get currentUser => _client.auth.currentUser;
-  Session? get currentSession => _client.auth.currentSession;
+  User? get currentUser => _initialized ? Supabase.instance.client.auth.currentUser : null;
+  Session? get currentSession => _initialized ? Supabase.instance.client.auth.currentSession : null;
   bool get isAuthenticated => currentUser != null;
 }

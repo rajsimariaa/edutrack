@@ -3,7 +3,7 @@ import 'supabase_service.dart';
 import '../models/models.dart';
 
 class GamificationService {
-  final _supabase = SupabaseService.instance.client;
+  final _supabase = SupabaseService.client;
 
   Future<List<HeatmapEntry>> getHeatmapData(
     String userId, {

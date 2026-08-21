@@ -3,7 +3,7 @@ import 'supabase_service.dart';
 import '../models/models.dart';
 
 class ScheduleService {
-  final _supabase = SupabaseService.instance.client;
+  final _supabase = SupabaseService.client;
 
   Future<Schedule?> getActiveSchedule(String userId) async {
     final data = await _supabase

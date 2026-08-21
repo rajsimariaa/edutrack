@@ -1,0 +1,5 @@
+CRITICAL FIX: App had no INTERNET permission on release builds.
+
+Root cause: AndroidManifest.xml was missing uses-permission for INTERNET in the release config. Debug builds had it but release did not.
+
+This caused Failed host lookup / SocketException on every network request, making the app unable to reach Supabase at all.

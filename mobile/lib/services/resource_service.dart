@@ -3,7 +3,7 @@ import 'supabase_service.dart';
 import '../models/models.dart';
 
 class ResourceService {
-  final _supabase = SupabaseService.instance.client;
+  final _supabase = SupabaseService.client;
 
   Future<List<Map<String, dynamic>>> getPastPapers(
     String examId, {

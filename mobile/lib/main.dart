@@ -13,19 +13,27 @@ void main() async {
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
     debugPrint('Flutter Error: ${details.exception}');
+    debugPrint('Stack: ${details.stack}');
   };
 
   PlatformDispatcher.instance.onError = (error, stack) {
     debugPrint('Platform Error: $error');
+    debugPrint('Stack: $stack');
     return true;
   };
 
-  await dotenv.load(fileName: 'assets/.env');
+  try {
+    await dotenv.load(fileName: 'assets/.env');
+    debugPrint('ENV loaded: URL=${Env.supabaseUrl}');
+    debugPrint('ENV loaded: Key prefix=${Env.supabaseAnonKey.substring(0, Env.supabaseAnonKey.length > 10 ? 10 : Env.supabaseAnonKey.length)}...');
+  } catch (e) {
+    debugPrint('ENV load failed: $e');
+  }
 
   try {
     await SupabaseService.initialize();
   } catch (e) {
-    debugPrint('Supabase init failed: $e');
+    debugPrint('CRITICAL: Supabase init failed: $e');
   }
 
   runApp(

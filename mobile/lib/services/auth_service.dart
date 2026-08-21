@@ -3,7 +3,7 @@ import 'supabase_service.dart';
 import '../models/models.dart';
 
 class AuthService {
-  final _supabase = SupabaseService.instance.client;
+  supa.SupabaseClient get _supabase => SupabaseService.client;
 
   supa.User? get currentUser => _supabase.auth.currentUser;
   Stream<supa.AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
