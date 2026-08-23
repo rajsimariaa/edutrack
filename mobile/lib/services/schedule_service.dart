@@ -84,7 +84,7 @@ class ScheduleService {
     }).eq('id', itemId);
   }
 
-  Future<void> rescheduleItem(String itemId, DateTime newDate) async {
+  Future<void> rescheduleItem(String itemId, DateTime newDate, {String? startTime}) async {
     final existing = await _supabase
         .from('schedule_items')
         .select()
@@ -93,6 +93,7 @@ class ScheduleService {
 
     await _supabase.from('schedule_items').update({
       'scheduled_date': newDate.toIso8601String().split('T')[0],
+      if (startTime != null) 'start_time': startTime,
       'status': 'rescheduled',
       'original_date': existing['scheduled_date'],
     }).eq('id', itemId);

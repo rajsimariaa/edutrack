@@ -44,7 +44,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   void _init() {
     final user = _authService.currentUser;
     if (user != null) {
-      state = state.copyWith(user: user);
+      state = state.copyWith(user: user, isLoading: true);
       _loadProfile(user.id);
     }
 
@@ -53,7 +53,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final session = authState.session;
 
       if (event == supa.AuthChangeEvent.signedIn && session != null) {
-        state = state.copyWith(user: session.user);
+        state = state.copyWith(user: session.user, isLoading: true);
         _loadProfile(session.user.id);
       } else if (event == supa.AuthChangeEvent.signedOut) {
         state = AuthState();
@@ -66,9 +66,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _loadProfile(String userId) async {
     try {
       final profile = await _authService.getProfile(userId);
-      state = state.copyWith(profile: profile);
+      state = state.copyWith(profile: profile, isLoading: false);
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: e.toString(), isLoading: false);
     }
   }
 
