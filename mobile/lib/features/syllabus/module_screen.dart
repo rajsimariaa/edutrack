@@ -47,6 +47,16 @@ class _ModuleScreenState extends ConsumerState<ModuleScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.subjectName),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go('/syllabus');
+            }
+          },
+        ),
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -92,7 +102,7 @@ class _ModuleScreenState extends ConsumerState<ModuleScreen> {
                               )
                             : null,
                         trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.go(
+                        onTap: () => context.push(
                             '/syllabus/chapter/${module.id}/${Uri.encodeComponent(module.name)}'),
                       ),
                     );

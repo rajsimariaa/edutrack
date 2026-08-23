@@ -324,10 +324,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildQuickActions(BuildContext context) {
     final actions = [
-      {'icon': Icons.play_arrow_rounded, 'label': 'Start\nFocus', 'route': '/focus', 'color': AppColors.primary},
-      {'icon': Icons.quiz_outlined, 'label': 'Take\nTest', 'route': '/tests', 'color': AppColors.secondary},
-      {'icon': Icons.sticky_note_2_outlined, 'label': 'Quick\nNotes', 'route': '/focus/notes', 'color': AppColors.accent},
-      {'icon': Icons.leaderboard_outlined, 'label': 'Leader\nBoard', 'route': '/gamification/leaderboard', 'color': AppColors.streak},
+      {'icon': Icons.play_arrow_rounded, 'label': 'Start\nFocus', 'route': '/focus', 'color': AppColors.primary, 'isTab': true},
+      {'icon': Icons.quiz_outlined, 'label': 'Take\nTest', 'route': '/tests', 'color': AppColors.secondary, 'isTab': true},
+      {'icon': Icons.sticky_note_2_outlined, 'label': 'Quick\nNotes', 'route': '/focus/notes', 'color': AppColors.accent, 'isTab': false},
+      {'icon': Icons.leaderboard_outlined, 'label': 'Leader\nBoard', 'route': '/gamification/leaderboard', 'color': AppColors.streak, 'isTab': false},
     ];
 
     return Column(
@@ -345,7 +345,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: actions.map((action) {
             return Expanded(
               child: GestureDetector(
-                onTap: () => context.go(action['route'] as String),
+                onTap: () {
+                  final route = action['route'] as String;
+                  final isTab = action['isTab'] as bool;
+                  if (isTab) {
+                    context.go(route);
+                  } else {
+                    context.push(route);
+                  }
+                },
                 child: Container(
                   margin: const EdgeInsets.only(right: 8),
                   padding: const EdgeInsets.all(16),

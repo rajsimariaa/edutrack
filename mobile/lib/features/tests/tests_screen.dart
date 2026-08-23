@@ -107,7 +107,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             trailing: ElevatedButton(
-              onPressed: () => context.go('/tests/${test.id}'),
+              onPressed: () => context.push('/tests/${test.id}'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size.zero,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

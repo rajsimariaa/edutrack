@@ -180,8 +180,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildQuickAction('Notes', Icons.note_add_outlined, () => context.go('/focus/notes')),
-                  _buildQuickAction('Badges', Icons.emoji_events_outlined, () => context.go('/gamification')),
+                  _buildQuickAction('Notes', Icons.note_add_outlined, () => context.push('/focus/notes')),
+                  _buildQuickAction('Badges', Icons.emoji_events_outlined, () => context.push('/gamification')),
                   _buildQuickAction('Habits', Icons.checklist_outlined, () => context.go('/focus/habits')),
                 ],
               ),

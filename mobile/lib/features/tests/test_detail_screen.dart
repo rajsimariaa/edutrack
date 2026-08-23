@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
 import '../../models/models.dart';
@@ -151,6 +152,16 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_test!.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go('/tests');
+            }
+          },
+        ),
         actions: [
           if (_timerActive && _remainingSeconds > 0)
             Padding(

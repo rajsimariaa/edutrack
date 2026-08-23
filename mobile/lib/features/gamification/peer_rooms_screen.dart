@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
 import '../../models/models.dart';
@@ -37,7 +38,19 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Peer Rooms')),
+      appBar: AppBar(
+        title: const Text('Peer Rooms'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.canPop(context)) {
+              Navigator.pop(context);
+            } else {
+              context.go('/profile');
+            }
+          },
+        ),
+      ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _rooms.isEmpty
