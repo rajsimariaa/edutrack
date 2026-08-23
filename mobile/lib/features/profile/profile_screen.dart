@@ -336,7 +336,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           _buildMenuItem(
             Icons.leaderboard_outlined,
             'Leaderboard',
-            () => context.go('/gamification/leaderboard'),
+            () => context.push('/gamification/leaderboard'),
+          ),
+          const Divider(height: 1),
+          _buildMenuItem(
+            Icons.analytics_outlined,
+            'My Analytics',
+            () => context.push('/profile/analytics'),
           ),
           const Divider(height: 1),
           _buildMenuItem(

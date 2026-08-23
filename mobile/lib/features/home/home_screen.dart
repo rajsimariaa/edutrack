@@ -327,7 +327,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final actions = [
       {'icon': Icons.play_arrow_rounded, 'label': 'Start\nFocus', 'route': '/focus', 'color': AppColors.primary, 'isTab': true},
       {'icon': Icons.quiz_outlined, 'label': 'Take\nTest', 'route': '/tests', 'color': AppColors.secondary, 'isTab': true},
-      {'icon': Icons.sticky_note_2_outlined, 'label': 'Quick\nNotes', 'route': '/focus/notes', 'color': AppColors.accent, 'isTab': false},
+      {'icon': Icons.style_outlined, 'label': 'Flash\nCards', 'route': '/focus/flashcards', 'color': AppColors.accent, 'isTab': false},
       {'icon': Icons.leaderboard_outlined, 'label': 'Leader\nBoard', 'route': '/gamification/leaderboard', 'color': AppColors.streak, 'isTab': false},
     ];
 

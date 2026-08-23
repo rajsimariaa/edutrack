@@ -20,7 +20,9 @@ import '../features/gamification/leaderboard_screen.dart';
 import '../features/resources/resources_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/focus/habits_screen.dart';
+import '../features/focus/flashcards_screen.dart';
 import '../features/gamification/peer_rooms_screen.dart';
+import '../features/profile/analytics_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -101,6 +103,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/focus/notes',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const NotesScreen(),
+      ),
+      GoRoute(
+        path: '/focus/flashcards',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FlashcardsScreen(),
+      ),
+      GoRoute(
+        path: '/profile/analytics',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const AnalyticsScreen(),
       ),
       GoRoute(
         path: '/gamification/leaderboard',

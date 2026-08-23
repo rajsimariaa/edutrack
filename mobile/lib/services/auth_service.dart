@@ -84,7 +84,7 @@ class AuthService {
 
     if (fullName != null && fullName.toString().isNotEmpty) {
       await _supabase.auth.updateUser(
-        UserAttributes(data: {'full_name': fullName}),
+        supa.UserAttributes(data: {'full_name': fullName}),
       );
     }
 

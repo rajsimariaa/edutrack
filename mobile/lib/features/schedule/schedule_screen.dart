@@ -101,6 +101,8 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                   if (_activeSchedule != null)
                     _buildProgressCard(pct, completedCount, totalCount),
                   const SizedBox(height: 16),
+                  _buildWeekCalendar(),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -140,6 +142,76 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
         },
         icon: const Icon(Icons.add),
         label: Text(_activeSchedule != null ? 'Add Task' : 'Create Schedule'),
+      ),
+    );
+  }
+
+  Widget _buildWeekCalendar() {
+    final now = DateTime.now();
+    final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final days = List.generate(7, (i) => startOfWeek.add(Duration(days: i)));
+
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: days.map((day) {
+          final isToday = day.year == now.year && day.month == now.month && day.day == now.day;
+          final isSelected = day.year == _selectedDate.year && day.month == _selectedDate.month && day.day == _selectedDate.day;
+          return GestureDetector(
+            onTap: () {
+              setState(() => _selectedDate = day);
+              _loadData();
+            },
+            child: Column(
+              children: [
+                Text(
+                  DateFormat('E').format(day),
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: AppColors.textSecondary,
+                    fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.primary
+                        : isToday
+                            ? AppColors.primary.withOpacity(0.1)
+                            : Colors.transparent,
+                    borderRadius: BorderRadius.circular(18),
+                    border: isToday && !isSelected
+                        ? Border.all(color: AppColors.primary, width: 1.5)
+                        : null,
+                  ),
+                  child: Center(
+                    child: Text(
+                      '${day.day}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: isSelected
+                            ? Colors.white
+                            : isToday
+                                ? AppColors.primary
+                                : AppColors.textPrimary,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }).toList(),
       ),
     );
   }
