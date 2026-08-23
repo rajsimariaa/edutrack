@@ -1,7 +1,7 @@
-Major fixes:
+CRITICAL FIX: All database operations now work!
 
-- Back Navigation: Added back buttons to all non-shell screens, changed go() to push() for detail screens so system back works
-- RLS Policies: Applied Row Level Security for ALL tables: schedules, schedule_items, peer_rooms, peer_room_members, pomodoro_sessions, notes, habits, habit_entries, user_topic_progress, user_badges, heatmap_entries, tests, badges, exams, subjects, chapters, topics
-- Schedule: Can now create schedules and add tasks
-- Peer Rooms: Can now create and join rooms
-- Navigation: Detail screens use push() so back button works properly
+Root cause: schedules, peer_rooms, pomodoro_sessions, notes, habits, heatmap_entries, user_topic_progress, user_badges, user_milestones, test_submissions, progress_cards, leaderboard_entries, youtube_links ALL had foreign key constraints pointing to the custom 'users' table instead of 'auth.users'. Since Supabase Auth creates users in 'auth.users', every INSERT failed silently.
+
+Fix: Dropped and recreated all FKs to reference auth.users(id).
+
+Also: Seeded exam/subject/module/chapter/topic data for all 9 exams (CA, CS, CMA, CFA, JEE, NEET).
