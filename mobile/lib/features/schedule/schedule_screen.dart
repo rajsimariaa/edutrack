@@ -68,6 +68,11 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     }
   }
 
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year && date.month == now.month && date.day == now.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     final completedCount = _todayItems
@@ -100,7 +105,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        _selectedDate.isToday
+                        _isToday(_selectedDate)
                             ? "Today's Tasks"
                             : DateFormat('MMM d, yyyy').format(_selectedDate),
                         style: const TextStyle(
@@ -388,7 +393,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               const SizedBox(height: 16),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.date_today, color: AppColors.primary),
+                leading: const Icon(Icons.calendar_today, color: AppColors.primary),
                 title: const Text('Date'),
                 subtitle: Text(DateFormat('MMM d, yyyy').format(taskDate)),
                 trailing: const Icon(Icons.chevron_right),
@@ -480,7 +485,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               const SizedBox(height: 16),
               ListTile(
                 contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.date_today, color: AppColors.primary),
+                leading: const Icon(Icons.calendar_today, color: AppColors.primary),
                 title: const Text('New Date'),
                 subtitle: Text(DateFormat('MMM d, yyyy').format(newDate)),
                 trailing: const Icon(Icons.chevron_right),
