@@ -1,5 +1,7 @@
-CRITICAL FIX: App had no INTERNET permission on release builds.
+Major fixes:
 
-Root cause: AndroidManifest.xml was missing uses-permission for INTERNET in the release config. Debug builds had it but release did not.
-
-This caused Failed host lookup / SocketException on every network request, making the app unable to reach Supabase at all.
+- Back Navigation: Added back buttons to all non-shell screens, changed go() to push() for detail screens so system back works
+- RLS Policies: Applied Row Level Security for ALL tables: schedules, schedule_items, peer_rooms, peer_room_members, pomodoro_sessions, notes, habits, habit_entries, user_topic_progress, user_badges, heatmap_entries, tests, badges, exams, subjects, chapters, topics
+- Schedule: Can now create schedules and add tasks
+- Peer Rooms: Can now create and join rooms
+- Navigation: Detail screens use push() so back button works properly
