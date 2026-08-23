@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,22 +22,16 @@ import '../features/profile/profile_screen.dart';
 import '../features/focus/habits_screen.dart';
 import '../features/gamification/peer_rooms_screen.dart';
 
-class AuthRefreshNotifier extends ChangeNotifier {
-  void refresh() => notifyListeners();
-}
-
-final authRefreshProvider = Provider<AuthRefreshNotifier>((ref) {
-  final notifier = AuthRefreshNotifier();
-  ref.listen<AuthState>(authProvider, (_, _) => notifier.refresh());
-  return notifier;
-});
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authRefresh = ref.watch(authRefreshProvider);
-
   return GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: '/login',
-    refreshListenable: authRefresh,
+    refreshListenable: GoRouterRefreshStream(
+      ref.read(authProvider.notifier).stream,
+    ),
     redirect: (context, state) {
       final authState = ref.read(authProvider);
       final isLoggedIn = authState.isAuthenticated;
@@ -46,85 +41,35 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isAuthPage = location == '/login' || location == '/register';
 
       if (isLoading) return null;
-
-      if (!isLoggedIn) {
-        return isAuthPage ? null : '/login';
-      }
-
-      if (isLoggedIn && authState.profile == null && !isOnboarding) {
-        return '/onboarding';
-      }
-
-      if (isLoggedIn && authState.profile != null && isOnboarding) {
-        return '/home';
-      }
-
-      if (isLoggedIn && authState.profile != null && isAuthPage) {
-        return '/home';
-      }
-
+      if (!isLoggedIn) return isAuthPage ? null : '/login';
+      if (isLoggedIn && authState.profile == null && !isOnboarding) return '/onboarding';
+      if (isLoggedIn && authState.profile != null && isOnboarding) return '/home';
+      if (isLoggedIn && authState.profile != null && isAuthPage) return '/home';
       return null;
     },
     routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/register',
-        builder: (context, state) => const RegisterScreen(),
-      ),
-      GoRoute(
-        path: '/onboarding',
-        builder: (context, state) => const OnboardingScreen(),
-      ),
+      GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/register', builder: (context, state) => const RegisterScreen()),
+      GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingScreen()),
       ShellRoute(
+        navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => HomeShell(child: child),
         routes: [
-          GoRoute(
-            path: '/home',
-            builder: (context, state) => const HomeScreen(),
-          ),
-          GoRoute(
-            path: '/syllabus',
-            builder: (context, state) => const SyllabusScreen(),
-          ),
-          GoRoute(
-            path: '/schedule',
-            builder: (context, state) => const ScheduleScreen(),
-          ),
-          GoRoute(
-            path: '/tests',
-            builder: (context, state) => const TestsScreen(),
-          ),
-          GoRoute(
-            path: '/focus',
-            builder: (context, state) => const FocusScreen(),
-          ),
-          GoRoute(
-            path: '/gamification',
-            builder: (context, state) => const GamificationScreen(),
-          ),
-          GoRoute(
-            path: '/resources',
-            builder: (context, state) => const ResourcesScreen(),
-          ),
-          GoRoute(
-            path: '/profile',
-            builder: (context, state) => const ProfileScreen(),
-          ),
-          GoRoute(
-            path: '/focus/habits',
-            builder: (context, state) => const HabitsScreen(),
-          ),
-          GoRoute(
-            path: '/profile/peer-rooms',
-            builder: (context, state) => const PeerRoomsScreen(),
-          ),
+          GoRoute(path: '/home', builder: (context, state) => const HomeScreen()),
+          GoRoute(path: '/syllabus', builder: (context, state) => const SyllabusScreen()),
+          GoRoute(path: '/schedule', builder: (context, state) => const ScheduleScreen()),
+          GoRoute(path: '/tests', builder: (context, state) => const TestsScreen()),
+          GoRoute(path: '/focus', builder: (context, state) => const FocusScreen()),
+          GoRoute(path: '/gamification', builder: (context, state) => const GamificationScreen()),
+          GoRoute(path: '/resources', builder: (context, state) => const ResourcesScreen()),
+          GoRoute(path: '/profile', builder: (context, state) => const ProfileScreen()),
+          GoRoute(path: '/focus/habits', builder: (context, state) => const HabitsScreen()),
+          GoRoute(path: '/profile/peer-rooms', builder: (context, state) => const PeerRoomsScreen()),
         ],
       ),
       GoRoute(
         path: '/syllabus/modules/:subjectId/:subjectName',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => ModuleScreen(
           subjectId: state.pathParameters['subjectId']!,
           subjectName: Uri.decodeComponent(state.pathParameters['subjectName']!),
@@ -132,6 +77,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/syllabus/chapter/:chapterId/:chapterName',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => ChapterScreen(
           chapterId: state.pathParameters['chapterId']!,
           chapterName: Uri.decodeComponent(state.pathParameters['chapterName']!),
@@ -139,27 +85,45 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/syllabus/chapter/:chapterId',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => ChapterScreen(
           chapterId: state.pathParameters['chapterId']!,
         ),
       ),
       GoRoute(
         path: '/tests/:testId',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => TestDetailScreen(
           testId: state.pathParameters['testId']!,
         ),
       ),
       GoRoute(
         path: '/focus/notes',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const NotesScreen(),
       ),
       GoRoute(
         path: '/gamification/leaderboard',
+        parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const LeaderboardScreen(),
       ),
     ],
   );
 });
+
+class GoRouterRefreshStream extends ChangeNotifier {
+  GoRouterRefreshStream(Stream<dynamic> stream) {
+    notifyListeners();
+    _subscription = stream.asBroadcastStream().listen((_) => notifyListeners());
+  }
+  late final StreamSubscription<dynamic> _subscription;
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
+  }
+}
 
 class HomeShell extends StatelessWidget {
   final Widget child;
@@ -172,6 +136,9 @@ class HomeShell extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getCurrentIndex(context),
         onTap: (index) => _onTap(context, index),
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home_outlined),
@@ -215,21 +182,11 @@ class HomeShell extends StatelessWidget {
 
   void _onTap(BuildContext context, int index) {
     switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/syllabus');
-        break;
-      case 2:
-        context.go('/schedule');
-        break;
-      case 3:
-        context.go('/focus');
-        break;
-      case 4:
-        context.go('/profile');
-        break;
+      case 0: context.go('/home'); break;
+      case 1: context.go('/syllabus'); break;
+      case 2: context.go('/schedule'); break;
+      case 3: context.go('/focus'); break;
+      case 4: context.go('/profile'); break;
     }
   }
 }

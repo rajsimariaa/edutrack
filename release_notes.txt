@@ -1,5 +1,17 @@
-Fix: Topics now show in syllabus + Tests available
+v2.4.0 - Major fixes & improvements
 
-- Fixed syllabus navigation: ModuleScreen now loads chapters correctly, so tapping a subject shows chapters ? topics (was passing module_id instead of chapter_id)
-- Seeded 3 tests with 15 MCQ questions for CA Foundation (Accounting Fundamentals, Accounting Process, Business Laws)
-- All topics, chapters, modules now properly linked and visible in the app
+ONBOARDING FIX: Profile/onboarding screen no longer reappears on every app open. Added loading state to prevent router from redirecting before profile loads.
+
+SCHEDULE OVERHAUL:
+- Create schedule now asks for start date and end date
+- Add task now asks for date, start time, and end time
+- Reschedule now asks for new date and new time
+- Calendar icon now opens date picker to view any day's tasks
+- 'Today' button to quickly return to current day
+
+CONTENT:
+- Added 14 more chapters across CA Foundation (Cost Accounting, Financial Statements, Contract Act, Sale of Goods, Partnership Act, etc.)
+- Added 28 more topics across all new chapters
+- Total: 25 chapters, 43 topics across all CA Foundation subjects
+
+PERFORMANCE: Router no longer recreates on every auth state change

@@ -339,6 +339,12 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
         wrong++;
       }
     }
+    final skipped = _questions.length - correct - wrong;
+    final totalMarks = _questions.fold<double>(0, (sum, q) => sum + q.marks);
+    final obtained = _questions.asMap().entries.fold<double>(0, (sum, entry) {
+      return sum + (_answers[entry.key] == entry.value.correctOption ? entry.value.marks : 0);
+    });
+    final pct = totalMarks > 0 ? (obtained / totalMarks * 100) : 0.0;
 
     return Scaffold(
       body: SafeArea(
@@ -349,16 +355,24 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  Icons.check_circle_outline,
+                  pct >= 50 ? Icons.check_circle_outline : Icons.info_outline,
                   size: 80,
-                  color: AppColors.success,
+                  color: pct >= 50 ? AppColors.success : AppColors.secondary,
                 ),
                 const SizedBox(height: 24),
                 const Text(
-                  'Test Submitted!',
+                  'Test Completed!',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '${obtained.toStringAsFixed(1)} / ${totalMarks.toStringAsFixed(0)} marks (${pct.toStringAsFixed(0)}%)',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.textSecondary,
                   ),
                 ),
                 const SizedBox(height: 32),
@@ -367,11 +381,27 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                   children: [
                     _buildResultStat('Correct', '$correct', AppColors.success),
                     _buildResultStat('Wrong', '$wrong', AppColors.error),
-                    _buildResultStat('Skipped', '${_questions.length - correct - wrong}', AppColors.textHint),
+                    _buildResultStat('Skipped', '$skipped', AppColors.textHint),
                   ],
                 ),
                 const SizedBox(height: 48),
                 ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isSubmitted = false;
+                      _currentQuestion = 0;
+                      _answers = {};
+                      if (_test != null && _test!.durationMins > 0) {
+                        _remainingSeconds = _test!.durationMins * 60;
+                        _timerActive = true;
+                        _startTimer();
+                      }
+                    });
+                  },
+                  child: const Text('Retake Test'),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton(
                   onPressed: () => Navigator.pop(context),
                   child: const Text('Back to Tests'),
                 ),

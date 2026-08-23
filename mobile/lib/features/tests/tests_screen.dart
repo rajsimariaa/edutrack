@@ -17,6 +17,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
   final _testService = TestService();
   List<Test> _tests = [];
   List<UserTestSubmission> _submissions = [];
+  Map<String, int> _attemptCounts = {};
   bool _isLoading = true;
 
   @override
@@ -37,7 +38,15 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
       final userId = auth.user?.id;
       if (userId == null) return;
       _submissions = await _testService.getUserSubmissions(userId);
-      setState(() => _isLoading = false);
+
+      final counts = <String, int>{};
+      for (final sub in _submissions) {
+        counts[sub.testId] = (counts[sub.testId] ?? 0) + 1;
+      }
+      setState(() {
+        _attemptCounts = counts;
+        _isLoading = false;
+      });
     } catch (e) {
       setState(() => _isLoading = false);
     }
@@ -85,6 +94,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
       itemCount: _tests.length,
       itemBuilder: (context, index) {
         final test = _tests[index];
+        final attempts = _attemptCounts[test.id] ?? 0;
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
@@ -103,7 +113,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              '${test.totalMarks} marks • ${test.durationMins} min',
+              '${test.totalMarks} marks • ${test.durationMins} min${attempts > 0 ? ' • Attempt $attempts' : ''}',
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
             trailing: ElevatedButton(
@@ -112,7 +122,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
                 minimumSize: Size.zero,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
-              child: const Text('Start'),
+              child: Text(attempts > 0 ? 'Retake' : 'Start'),
             ),
           ),
         );
@@ -148,7 +158,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
-              'Percentile: ${sub.percentile?.toStringAsFixed(1) ?? "N/A"} • Rank: ${sub.rankInCategory ?? "N/A"}',
+              'Correct: ${sub.totalCorrect ?? 0} • Wrong: ${sub.totalWrong ?? 0} • Skipped: ${sub.totalUnattempted ?? 0}',
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ),

@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/exam_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -174,7 +175,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  exam.isNotEmpty ? 'Preparing for $exam' : 'Complete your profile',
+                  exam.isNotEmpty ? 'Preparing for ${getExamDisplayName(exam)}' : 'Complete your profile',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 13,

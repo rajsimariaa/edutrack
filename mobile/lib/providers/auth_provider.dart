@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supa;
 import '../services/services.dart';
@@ -41,10 +42,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
     _init();
   }
 
+  final _controller = StreamController<AuthState>.broadcast();
+  Stream<AuthState> get stream => _controller.stream;
+
+  void _emit(AuthState newState) {
+    state = newState;
+    _controller.add(newState);
+  }
+
   void _init() {
     final user = _authService.currentUser;
     if (user != null) {
-      state = state.copyWith(user: user, isLoading: true);
+      _emit(state.copyWith(user: user, isLoading: true));
       _loadProfile(user.id);
     }
 
@@ -53,12 +62,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final session = authState.session;
 
       if (event == supa.AuthChangeEvent.signedIn && session != null) {
-        state = state.copyWith(user: session.user, isLoading: true);
+        _emit(state.copyWith(user: session.user, isLoading: true));
         _loadProfile(session.user.id);
       } else if (event == supa.AuthChangeEvent.signedOut) {
-        state = AuthState();
+        _emit(AuthState());
       } else if (event == supa.AuthChangeEvent.tokenRefreshed && session != null) {
-        state = state.copyWith(user: session.user);
+        _emit(state.copyWith(user: session.user));
       }
     });
   }
@@ -66,9 +75,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> _loadProfile(String userId) async {
     try {
       final profile = await _authService.getProfile(userId);
-      state = state.copyWith(profile: profile, isLoading: false);
+      _emit(state.copyWith(profile: profile, isLoading: false));
     } catch (e) {
-      state = state.copyWith(error: e.toString(), isLoading: false);
+      _emit(state.copyWith(error: e.toString(), isLoading: false));
     }
   }
 
@@ -77,16 +86,16 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String password,
     required String fullName,
   }) async {
-    state = state.copyWith(isLoading: true, error: null);
+    _emit(state.copyWith(isLoading: true, error: null));
     try {
       await _authService.signUp(
         email: email,
         password: password,
         fullName: fullName,
       );
-      state = state.copyWith(isLoading: false);
+      _emit(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      _emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
@@ -94,12 +103,12 @@ class AuthNotifier extends StateNotifier<AuthState> {
     required String email,
     required String password,
   }) async {
-    state = state.copyWith(isLoading: true, error: null);
+    _emit(state.copyWith(isLoading: true, error: null));
     try {
       await _authService.signIn(email: email, password: password);
-      state = state.copyWith(isLoading: false);
+      _emit(state.copyWith(isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      _emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
@@ -111,7 +120,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       await _authService.resetPassword(email);
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      _emit(state.copyWith(error: e.toString()));
     }
   }
 
@@ -122,7 +131,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     String? city,
   }) async {
     if (state.user == null) return;
-    state = state.copyWith(isLoading: true);
+    _emit(state.copyWith(isLoading: true));
     try {
       final profile = await _authService.createProfile(
         userId: state.user!.id,
@@ -131,9 +140,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         institution: institution,
         city: city,
       );
-      state = state.copyWith(profile: profile, isLoading: false);
+      _emit(state.copyWith(profile: profile, isLoading: false));
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+      _emit(state.copyWith(isLoading: false, error: e.toString()));
     }
   }
 
@@ -144,9 +153,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
         userId: state.user!.id,
         updates: updates,
       );
-      state = state.copyWith(profile: profile);
+      _emit(state.copyWith(profile: profile));
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      _emit(state.copyWith(error: e.toString()));
     }
   }
 }

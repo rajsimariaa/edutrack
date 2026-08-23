@@ -44,6 +44,24 @@ class TestService {
     int? timeTakenMins,
     List<Map<String, dynamic>>? answers,
   }) async {
+    await _supabase
+        .from('user_test_answers')
+        .delete()
+        .inFilter('submission_id',
+            (await _supabase
+                    .from('user_test_submissions')
+                    .select('id')
+                    .eq('user_id', userId)
+                    .eq('test_id', testId))
+                .map((s) => s['id'] as String)
+                .toList());
+
+    await _supabase
+        .from('user_test_submissions')
+        .delete()
+        .eq('user_id', userId)
+        .eq('test_id', testId);
+
     final submission = await _supabase
         .from('user_test_submissions')
         .insert({

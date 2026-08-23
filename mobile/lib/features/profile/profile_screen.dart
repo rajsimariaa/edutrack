@@ -6,6 +6,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/exam_utils.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -153,7 +154,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
-              '${auth.profile?.examCategory ?? "Not set"} • ${auth.profile?.targetYear ?? ""}',
+              '${getExamDisplayName(auth.profile?.examCategory ?? "Not set")} • ${auth.profile?.targetYear ?? ""}',
               style: TextStyle(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
@@ -214,54 +215,98 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final nameController = TextEditingController(text: auth.user?.userMetadata?['full_name'] ?? '');
     final institutionController = TextEditingController(text: auth.profile?.institution ?? '');
     final cityController = TextEditingController(text: auth.profile?.city ?? '');
+    String? selectedExam = auth.profile?.examCategory;
+    int? selectedYear = auth.profile?.targetYear;
+    double? studyHours = auth.profile?.dailyStudyHrs;
+
+    final examOptions = examDisplayNames.entries.map((e) => DropdownMenuItem(
+      value: e.key,
+      child: Text(e.value),
+    )).toList();
+
+    final yearOptions = [2026, 2027, 2028, 2029, 2030].map((y) => DropdownMenuItem(
+      value: y,
+      child: Text('$y'),
+    )).toList();
+
+    final studyOptions = [1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0].map((h) => DropdownMenuItem(
+      value: h,
+      child: Text('${h.toStringAsFixed(1)} hrs/day'),
+    )).toList();
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Profile'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Full Name'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: institutionController,
-                decoration: const InputDecoration(labelText: 'Institution'),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: cityController,
-                decoration: const InputDecoration(labelText: 'City'),
-              ),
-            ],
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Edit Profile'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(labelText: 'Full Name'),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  value: selectedExam,
+                  decoration: const InputDecoration(labelText: 'Exam Category'),
+                  items: examOptions,
+                  onChanged: (v) => setDialogState(() => selectedExam = v),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<int>(
+                  value: selectedYear,
+                  decoration: const InputDecoration(labelText: 'Target Year'),
+                  items: yearOptions,
+                  onChanged: (v) => setDialogState(() => selectedYear = v),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<double>(
+                  value: studyHours,
+                  decoration: const InputDecoration(labelText: 'Daily Study Hours'),
+                  items: studyOptions,
+                  onChanged: (v) => setDialogState(() => studyHours = v),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: institutionController,
+                  decoration: const InputDecoration(labelText: 'Institution'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: cityController,
+                  decoration: const InputDecoration(labelText: 'City'),
+                ),
+              ],
+            ),
           ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(
+              onPressed: () async {
+                final userId = auth.user?.id;
+                if (userId == null) return;
+                final updates = <String, dynamic>{};
+                if (nameController.text.isNotEmpty) updates['full_name'] = nameController.text;
+                if (selectedExam != null) updates['exam_category'] = selectedExam;
+                if (selectedYear != null) updates['target_year'] = selectedYear;
+                if (studyHours != null) updates['daily_study_hrs'] = studyHours;
+                updates['institution'] = institutionController.text;
+                updates['city'] = cityController.text;
+                
+                await ref.read(authProvider.notifier).updateProfile(updates);
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
+                  );
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () async {
-              final userId = auth.user?.id;
-              if (userId == null) return;
-              final updates = <String, dynamic>{};
-              if (nameController.text.isNotEmpty) updates['full_name'] = nameController.text;
-              updates['institution'] = institutionController.text;
-              updates['city'] = cityController.text;
-              
-              await ref.read(authProvider.notifier).updateProfile(updates);
-              if (context.mounted) {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
-                );
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
   }
