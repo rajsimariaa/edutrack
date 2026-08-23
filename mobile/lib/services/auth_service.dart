@@ -79,9 +79,18 @@ class AuthService {
     required String userId,
     required Map<String, dynamic> updates,
   }) async {
+    final profileUpdates = Map<String, dynamic>.from(updates);
+    final fullName = profileUpdates.remove('full_name');
+
+    if (fullName != null && fullName.toString().isNotEmpty) {
+      await _supabase.auth.updateUser(
+        UserAttributes(data: {'full_name': fullName}),
+      );
+    }
+
     final data = await _supabase
         .from('user_profiles')
-        .update({...updates, 'updated_at': DateTime.now().toIso8601String()})
+        .update({...profileUpdates, 'updated_at': DateTime.now().toIso8601String()})
         .eq('user_id', userId)
         .select()
         .single();

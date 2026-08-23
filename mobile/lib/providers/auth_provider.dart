@@ -153,7 +153,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
         userId: state.user!.id,
         updates: updates,
       );
-      _emit(state.copyWith(profile: profile));
+      final updatedUser = _authService.currentUser;
+      _emit(state.copyWith(profile: profile, user: updatedUser));
     } catch (e) {
       _emit(state.copyWith(error: e.toString()));
     }

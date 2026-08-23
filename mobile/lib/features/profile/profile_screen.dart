@@ -295,13 +295,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 updates['institution'] = institutionController.text;
                 updates['city'] = cityController.text;
                 
-                await ref.read(authProvider.notifier).updateProfile(updates);
-                if (context.mounted) {
-                  Navigator.pop(context);
+              await ref.read(authProvider.notifier).updateProfile(updates);
+              if (context.mounted) {
+                Navigator.pop(context);
+                final error = ref.read(authProvider).error;
+                if (error != null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Update failed: $error'), backgroundColor: Colors.red),
+                  );
+                } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Profile updated!'), backgroundColor: Colors.green),
                   );
                 }
+              }
               },
               child: const Text('Save'),
             ),

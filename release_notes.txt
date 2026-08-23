@@ -1,17 +1,24 @@
-v2.4.0 - Major fixes & improvements
+v2.5.0 - Major Bug Fixes & Full Profile Editing
 
-ONBOARDING FIX: Profile/onboarding screen no longer reappears on every app open. Added loading state to prevent router from redirecting before profile loads.
+PERFORMANCE (biggest fix):
+- Router no longer recreates on every auth state change. Used
+  GoRouterRefreshStream pattern instead of ref.watch. This was the
+  main cause of app slowness and navigation glitches.
 
-SCHEDULE OVERHAUL:
-- Create schedule now asks for start date and end date
-- Add task now asks for date, start time, and end time
-- Reschedule now asks for new date and new time
-- Calendar icon now opens date picker to view any day's tasks
-- 'Today' button to quickly return to current day
+PROFILE EDITING:
+- Edit dialog now has ALL fields: Full Name, Exam Category (dropdown),
+  Target Year (dropdown), Daily Study Hours (dropdown), Institution, City
+- Shows friendly exam names (CA Foundation) not codes (CA_FND)
 
-CONTENT:
-- Added 14 more chapters across CA Foundation (Cost Accounting, Financial Statements, Contract Act, Sale of Goods, Partnership Act, etc.)
-- Added 28 more topics across all new chapters
-- Total: 25 chapters, 43 topics across all CA Foundation subjects
+TESTS:
+- Retake button shown for previously attempted tests
+- Result screen shows score percentage, correct/wrong/skipped counts
+- Retake option on result screen
+- submitTest deletes old submission before inserting (allows retakes)
 
-PERFORMANCE: Router no longer recreates on every auth state change
+RESOURCES:
+- YouTube links now load properly by exam (fetches through chapters)
+
+NAVIGATION:
+- Root and shell navigator keys prevent back-button issues
+- Bottom nav items have fixed type for proper styling
