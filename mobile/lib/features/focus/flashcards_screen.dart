@@ -609,7 +609,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
     required String label,
     required Color color,
     VoidCallback? onTap,
-  ) {
+  }) {
     final isDisabled = onTap == null;
     return GestureDetector(
       onTap: onTap,
