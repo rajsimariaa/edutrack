@@ -1,12 +1,21 @@
-v2.5.1 - Profile Update Fix
+v3.0.0 - Complete App Overhaul
 
-Root cause: full_name column does not exist in user_profiles table.
-It lives in auth.users metadata. Updates to full_name were silently
-ignored by PostgREST.
+NEW FEATURES:
+- Flashcards: Flip-card study mode with subject picker, shuffle, known/review tracking, 3D flip animation. Access from Home or Focus screen.
+- Analytics Dashboard: Subject progress bars, weekly activity chart, test performance stats, streak tracking. Access from Profile menu.
+- Week Calendar: Schedule now shows a week view with tap-to-select days.
 
-Fix:
-- full_name now updates via Supabase auth.updateUser(data: {full_name})
-- Other fields (exam_category, target_year, daily_study_hrs, institution,
-  city) update user_profiles table as before
-- After update, currentUser is refreshed to reflect new metadata
-- Edit dialog shows error message if update fails
+CONTENT (18 tests, 90 questions across ALL exams):
+- CA Foundation: 3 tests (15 questions)
+- CA Intermediate: 2 tests (10 questions)
+- CA Final: 2 tests (10 questions)
+- CS Executive: 1 test (5 questions)
+- CMA Foundation: 2 tests (10 questions)
+- CFA Level 1: 2 tests (10 questions)
+- JEE Main: 2 tests (10 questions)
+- JEE Advanced: 2 tests (10 questions)
+- NEET UG: 2 tests (10 questions)
+
+GAMIFICATION:
+- 10 badges (First Steps, Week Warrior, Quiz Master, Perfect Score, Bookworm, Focus Champion, Marathon Runner, Knowledge Seeker, Speed Demon, Team Player)
+- Weekly leaderboard with rankings

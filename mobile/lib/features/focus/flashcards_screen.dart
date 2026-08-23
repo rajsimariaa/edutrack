@@ -18,6 +18,8 @@ class FlashcardsScreen extends ConsumerStatefulWidget {
 class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
     with SingleTickerProviderStateMixin {
   final _syllabusService = SyllabusService();
+  late AnimationController _flipController;
+  late Animation<double> _flipAnimation;
 
   List<Subject> _subjects = [];
   Subject? _selectedSubject;
@@ -26,15 +28,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
   bool _isFlipped = false;
   bool _isLoading = false;
   bool _hasLoaded = false;
-  late AnimationController _flipController;
-  late Animation<double> _flipAnimation;
 
   @override
   void initState() {
     super.initState();
     _flipController = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 350),
+      duration: const Duration(milliseconds: 300),
     );
     _flipAnimation = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _flipController, curve: Curves.easeInOut),
@@ -67,7 +67,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       _isLoading = true;
       _selectedSubject = subject;
       _isFlipped = false;
-      _flipController.reset();
     });
 
     try {
@@ -84,13 +83,15 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
               front: topic.name,
               back: topic.description?.isNotEmpty == true
                   ? topic.description!
-                  : 'Study this topic',
+                  : 'Study "${topic.name}" from ${chapter.name}',
               subjectName: subject.name,
               chapterName: chapter.name,
             ));
           }
         }
       }
+
+      cards.shuffle(Random());
 
       setState(() {
         _flashcards = cards;
@@ -104,7 +105,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
   }
 
   void _flipCard() {
-    if (_flipController.isAnimating) return;
     if (_isFlipped) {
       _flipController.reverse();
     } else {
@@ -118,7 +118,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       setState(() {
         _currentIndex++;
         _isFlipped = false;
-        _flipController.reset();
       });
     }
   }
@@ -128,7 +127,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       setState(() {
         _currentIndex--;
         _isFlipped = false;
-        _flipController.reset();
       });
     }
   }
@@ -156,7 +154,6 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       _flashcards.shuffle(Random());
       _currentIndex = 0;
       _isFlipped = false;
-      _flipController.reset();
     });
   }
 
@@ -290,7 +287,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
           ),
           const SizedBox(height: 8),
           const Text(
-            'This subject has no topics yet.\nAdd topics to your syllabus to generate flashcards.',
+            'This subject has no topics yet.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textSecondary,
@@ -316,7 +313,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
 
   Widget _buildCardView() {
     final card = _flashcards[_currentIndex];
-    final progress = _flashcards.isEmpty ? 0.0 : (_currentIndex + 1) / _flashcards.length;
+    final progress = _flashcards.isEmpty
+        ? 0.0
+        : (_currentIndex + 1) / _flashcards.length;
 
     return Column(
       children: [
@@ -379,12 +378,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
               child: AnimatedBuilder(
                 animation: _flipAnimation,
                 builder: (context, child) {
-                  final isFront = _flipAnimation.value < 0.5;
+                  final angle = _flipAnimation.value * pi;
+                  final isFront = _flipAnimation.value <= 0.5;
                   return Transform(
                     alignment: Alignment.center,
                     transform: Matrix4.identity()
                       ..setEntry(3, 2, 0.001)
-                      ..rotateY(_flipAnimation.value * pi),
+                      ..rotateY(angle),
                     child: isFront
                         ? _buildFront(card)
                         : Transform(
@@ -437,9 +437,12 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: const Icon(Icons.touch_app, color: AppColors.primary),
+                  icon: Icon(
+                    _isFlipped ? Icons.visibility_off : Icons.visibility,
+                    color: AppColors.primary,
+                  ),
                   onPressed: _flipCard,
-                  tooltip: 'Flip',
+                  tooltip: _isFlipped ? 'Hide answer' : 'Reveal answer',
                 ),
               ),
               _buildActionButton(
