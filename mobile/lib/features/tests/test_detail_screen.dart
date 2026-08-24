@@ -157,7 +157,8 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     }
 
     final question = _questions[_currentQuestion];
-    final options = List<Map<String, dynamic>>.from(question.options);
+    final options = question.options;
+    final sortedKeys = options.keys.toList()..sort();
 
     return Scaffold(
       appBar: AppBar(
@@ -241,16 +242,14 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  ...options.asMap().entries.map((entry) {
-                    final idx = entry.key;
-                    final opt = entry.value;
-                    final label = String.fromCharCode(65 + idx);
-                    final isSelected = _answers[_currentQuestion] == label;
+                  ...sortedKeys.map((key) {
+                    final text = options[key]?.toString() ?? '';
+                    final isSelected = _answers[_currentQuestion] == key;
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: GestureDetector(
-                        onTap: () => _selectAnswer(_currentQuestion, label),
+                        onTap: () => _selectAnswer(_currentQuestion, key),
                         child: Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
@@ -278,7 +277,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                                 ),
                                 alignment: Alignment.center,
                                 child: Text(
-                                  label,
+                                  key,
                                   style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: isSelected
@@ -290,7 +289,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  opt['text'] ?? '',
+                                  text,
                                   style: TextStyle(
                                     color: isSelected
                                         ? AppColors.primary
@@ -357,88 +356,245 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     final pct = totalMarks > 0 ? (obtained / totalMarks * 100) : 0.0;
 
     return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(
+        title: const Text('Results'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: pct >= 50
+                      ? [AppColors.success, AppColors.success.withOpacity(0.8)]
+                      : [AppColors.secondary, AppColors.secondary.withOpacity(0.8)],
+                ),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  Icon(
+                    pct >= 50 ? Icons.check_circle_outline : Icons.info_outline,
+                    size: 60,
+                    color: Colors.white,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    '${pct.toStringAsFixed(0)}%',
+                    style: const TextStyle(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${obtained.toStringAsFixed(1)} / ${totalMarks.toStringAsFixed(0)} marks',
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
               children: [
-                Icon(
-                  pct >= 50 ? Icons.check_circle_outline : Icons.info_outline,
-                  size: 80,
-                  color: pct >= 50 ? AppColors.success : AppColors.secondary,
-                ),
-                const SizedBox(height: 24),
+                _buildResultStat('Correct', '$correct', AppColors.success),
+                _buildResultStat('Wrong', '$wrong', AppColors.error),
+                _buildResultStat('Skipped', '$skipped', AppColors.textHint),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
                 const Text(
-                  'Test Completed!',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Question Review',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8),
                 Text(
-                  '${obtained.toStringAsFixed(1)} / ${totalMarks.toStringAsFixed(0)} marks (${pct.toStringAsFixed(0)}%)',
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildResultStat('Correct', '$correct', AppColors.success),
-                    _buildResultStat('Wrong', '$wrong', AppColors.error),
-                    _buildResultStat('Skipped', '$skipped', AppColors.textHint),
-                  ],
-                ),
-                const SizedBox(height: 48),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _isSubmitted = false;
-                      _currentQuestion = 0;
-                      _answers = {};
-                      if (_test != null && _test!.durationMins > 0) {
-                        _remainingSeconds = _test!.durationMins * 60;
-                        _timerActive = true;
-                        _startTimer();
-                      }
-                    });
-                  },
-                  child: const Text('Retake Test'),
-                ),
-                const SizedBox(height: 12),
-                OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Back to Tests'),
+                  '${correct}/${_questions.length} correct',
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
-          ),
+            const SizedBox(height: 12),
+            ...List.generate(_questions.length, (i) {
+              final q = _questions[i];
+              final userAnswer = _answers[i];
+              final isCorrect = userAnswer == q.correctOption;
+              final options = q.options;
+              final correctText = options[q.correctOption]?.toString() ?? q.correctOption;
+
+              return Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isCorrect
+                        ? AppColors.success.withOpacity(0.5)
+                        : AppColors.error.withOpacity(0.5),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: isCorrect ? AppColors.success : AppColors.error,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isCorrect ? Icons.check : Icons.close,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'Q${i + 1}. ${q.questionText}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    if (userAnswer != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 38),
+                        child: Text(
+                          'Your answer: $userAnswer - ${options[userAnswer]?.toString() ?? ''}',
+                          style: TextStyle(
+                            color: isCorrect ? AppColors.success : AppColors.error,
+                            fontSize: 13,
+                          ),
+                        ),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.only(left: 38),
+                        child: Text(
+                          'Skipped',
+                          style: TextStyle(color: AppColors.textHint, fontSize: 13),
+                        ),
+                      ),
+                    if (!isCorrect)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 38, top: 4),
+                        child: Text(
+                          'Correct: $q.correctOption - $correctText',
+                          style: TextStyle(
+                            color: AppColors.success,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    if (q.explanation != null && q.explanation!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 38, top: 8),
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.lightbulb_outline, size: 16, color: AppColors.primary),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  q.explanation!,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            }),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    _isSubmitted = false;
+                    _currentQuestion = 0;
+                    _answers = {};
+                    if (_test != null && _test!.durationMins > 0) {
+                      _remainingSeconds = _test!.durationMins * 60;
+                      _timerActive = true;
+                      _startTimer();
+                    }
+                  });
+                },
+                child: const Text('Retake Test'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Back to Tests'),
+              ),
+            ),
+            const SizedBox(height: 24),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildResultStat(String label, String value, Color color) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 32,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 6),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
         ),
-        Text(
-          label,
-          style: TextStyle(color: AppColors.textSecondary),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }

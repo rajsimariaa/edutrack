@@ -112,12 +112,31 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
                           topic.name,
                           style: const TextStyle(fontWeight: FontWeight.w500),
                         ),
-                        subtitle: Text(
-                          _statusLabel(status),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _statusColor(status),
-                          ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (topic.description != null && topic.description!.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  topic.description!,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            Text(
+                              _statusLabel(status),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: _statusColor(status),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
                         ),
                         trailing: PopupMenuButton<TopicStatus>(
                           onSelected: (s) => _updateStatus(topic, s),

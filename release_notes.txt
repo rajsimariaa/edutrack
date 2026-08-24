@@ -1,22 +1,17 @@
-v3.1.2 - Fix Notifications (Manifest Fix)
+v3.1.3 - Notification Engine Replacement
 
-The notification system was not working because the AndroidManifest.xml
-did not match the flutter_local_notifications v18 plugin requirements.
+Swapped flutter_local_notifications for awesome_notifications.
 
-This release matches the exact manifest from the plugin's official example app:
+WHY: flutter_local_notifications relies on Android AlarmManager which
+is unreliable — Android kills scheduled alarms when app is backgrounded.
 
-FIXES:
-- Added missing ActionBroadcastReceiver (required for notification actions)
-- Added missing ForegroundService declaration (required for delivery)
-- Added missing USE_FULL_SCREEN_INTENT permission
-- Added missing FOREGROUND_SERVICE + FOREGROUND_SERVICE_SPECIAL_USE permissions
-- Activity now has showWhenLocked + turnScreenOn for visibility
-- All declarations now exactly match flutter_local_notifications v18 spec
+awesome_notifications uses foreground service-based scheduling which
+Android cannot kill. It also handles boot rescheduling automatically.
 
-HOW TO TEST:
-1. Install the app
-2. Go to Profile > Study Reminders
-3. Enable reminders and set time to 1 minute from now
-4. Kill the app completely (swipe away from recents)
-5. Wait - notification should appear at the scheduled time
-6. Or tap 'Send Test Notification' for instant test
+CHANGES:
+- New notification engine: awesome_notifications 0.12.1
+- Foreground service-based delivery (not AlarmManager)
+- Automatic rescheduling on device reboot
+- Built-in POST_NOTIFICATIONS permission handling
+- WakeUpScreen for immediate visibility
+- preciseAlarm for exact timing

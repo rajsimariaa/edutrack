@@ -78,12 +78,18 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
         for (final chapter in chapters) {
           final topics = await _syllabusService.getTopics(chapter.id);
           for (final topic in topics) {
+            final desc = topic.description ?? '';
+            final hasGoodDescription = desc.length > 10;
+
+            final front = 'What is ${topic.name}?';
+            final back = hasGoodDescription
+                ? desc
+                : _generateAnswer(topic.name, chapter.name, mod.name, subject.name);
+
             cards.add(Flashcard(
               id: topic.id,
-              front: topic.name,
-              back: topic.description?.isNotEmpty == true
-                  ? topic.description!
-                  : 'Study "${topic.name}" from ${chapter.name}',
+              front: front,
+              back: back,
               subjectName: subject.name,
               chapterName: chapter.name,
             ));
@@ -102,6 +108,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
     } catch (_) {
       setState(() => _isLoading = false);
     }
+  }
+
+  String _generateAnswer(String topicName, String chapterName, String moduleName, String subjectName) {
+    return '$topicName is a key concept in $chapterName '
+        'under the module $moduleName in $subjectName. '
+        'Review your textbook notes and class materials for the complete definition, '
+        'formulas, and examples related to this topic.';
   }
 
   void _flipCard() {

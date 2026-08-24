@@ -67,7 +67,7 @@ class TestQuestion {
   final String? topicId;
   final String questionText;
   final String questionType;
-  final List<Map<String, dynamic>> options;
+  final Map<String, dynamic> options;
   final String correctOption;
   final double marks;
   final String? explanation;
@@ -87,13 +87,32 @@ class TestQuestion {
   }) : id = id ?? _uuid.v4();
 
   factory TestQuestion.fromJson(Map<String, dynamic> json) {
+    final rawOptions = json['options'];
+    Map<String, dynamic> parsedOptions;
+    if (rawOptions is Map) {
+      parsedOptions = Map<String, dynamic>.from(rawOptions);
+    } else if (rawOptions is List) {
+      parsedOptions = {};
+      for (var i = 0; i < rawOptions.length; i++) {
+        final opt = rawOptions[i];
+        final key = String.fromCharCode(65 + i);
+        if (opt is Map) {
+          parsedOptions[key] = opt['text'] ?? opt[key] ?? opt.toString();
+        } else {
+          parsedOptions[key] = opt.toString();
+        }
+      }
+    } else {
+      parsedOptions = {};
+    }
+
     return TestQuestion(
       id: json['id'],
       testId: json['test_id'],
       topicId: json['topic_id'],
       questionText: json['question_text'],
       questionType: json['question_type'] ?? 'mcq',
-      options: List<Map<String, dynamic>>.from(json['options'] ?? []),
+      options: parsedOptions,
       correctOption: json['correct_option'],
       marks: (json['marks'] as num).toDouble(),
       explanation: json['explanation'],
