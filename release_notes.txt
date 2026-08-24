@@ -1,11 +1,22 @@
-v3.1.1 - Fix Notifications When App Is Killed
+v3.1.2 - Fix Notifications (Manifest Fix)
 
-BUG FIX:
-- Notifications now fire reliably even when app is closed/killed
-- Changed to exact alarms (exactAllowWhileIdle) for guaranteed delivery
-- Added USE_EXACT_ALARM permission for Android 14+ compatibility
-- Added WAKE_LOCK to prevent CPU sleep before notification delivery
-- Notification receivers re-exported so BOOT_COMPLETED works after reboot
-- Notifications auto-re-schedule on every app launch
-- Added POST_NOTIFICATIONS runtime permission request (Android 13+)
-- Added 'Send Test Notification' button for instant verification
+The notification system was not working because the AndroidManifest.xml
+did not match the flutter_local_notifications v18 plugin requirements.
+
+This release matches the exact manifest from the plugin's official example app:
+
+FIXES:
+- Added missing ActionBroadcastReceiver (required for notification actions)
+- Added missing ForegroundService declaration (required for delivery)
+- Added missing USE_FULL_SCREEN_INTENT permission
+- Added missing FOREGROUND_SERVICE + FOREGROUND_SERVICE_SPECIAL_USE permissions
+- Activity now has showWhenLocked + turnScreenOn for visibility
+- All declarations now exactly match flutter_local_notifications v18 spec
+
+HOW TO TEST:
+1. Install the app
+2. Go to Profile > Study Reminders
+3. Enable reminders and set time to 1 minute from now
+4. Kill the app completely (swipe away from recents)
+5. Wait - notification should appear at the scheduled time
+6. Or tap 'Send Test Notification' for instant test
