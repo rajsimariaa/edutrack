@@ -1,17 +1,24 @@
-v3.1.3 - Notification Engine Replacement
+v3.1.5 - Critical Bug Fixes + More Tests
 
-Swapped flutter_local_notifications for awesome_notifications.
+BUG FIXES:
 
-WHY: flutter_local_notifications relies on Android AlarmManager which
-is unreliable — Android kills scheduled alarms when app is backgrounded.
+Notes:
+- Fixed notes not saving (DB had NOT NULL constraint on chapter_id)
+- chapterId now nullable in model and DB
+- Added error handling with snackbar feedback on save failures
 
-awesome_notifications uses foreground service-based scheduling which
-Android cannot kill. It also handles boot rescheduling automatically.
+Habits:
+- Added error handling for habit creation and check-in
+- Failed operations now show red error snackbar
 
-CHANGES:
-- New notification engine: awesome_notifications 0.12.1
-- Foreground service-based delivery (not AlarmManager)
-- Automatic rescheduling on device reboot
-- Built-in POST_NOTIFICATIONS permission handling
-- WakeUpScreen for immediate visibility
-- preciseAlarm for exact timing
+Home Screen:
+- Fixed all stats going blank when any single API call fails
+- Each stat loads independently - one failure no longer kills everything
+
+Flashcards:
+- Improved back-side content with more useful context per topic
+
+MORE CONTENT:
+- Added 17 new mock tests across all 9 exams (CA, CS, CMA, CFA, JEE, NEET)
+- 85 new questions with explanations
+- Each exam now has 4-5 tests available

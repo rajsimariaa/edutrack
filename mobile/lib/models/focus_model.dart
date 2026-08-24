@@ -57,7 +57,7 @@ class PomodoroSession {
 class Note {
   final String id;
   final String userId;
-  final String chapterId;
+  final String? chapterId;
   final String? topicId;
   final String? title;
   final String contentMd;
@@ -68,7 +68,7 @@ class Note {
   Note({
     String? id,
     required this.userId,
-    required this.chapterId,
+    this.chapterId,
     this.topicId,
     this.title,
     this.contentMd = '',

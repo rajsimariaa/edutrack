@@ -34,29 +34,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final userId = auth.user?.id;
     if (userId == null) return;
 
-    try {
-      final results = await Future.wait([
-        FocusService().getTotalFocusHours(userId),
-        BadgeService().getUserBadges(userId),
-        GamificationService().getHeatmapData(
-          userId,
-          startDate: DateTime.now().subtract(const Duration(days: 90)),
-        ),
-        _loadTodayItems(userId),
-        FocusService().getUserSessions(userId, limit: 3),
-      ]);
+    final focusService = FocusService();
+    final badgeService = BadgeService();
+    final gamificationService = GamificationService();
+    final scheduleService = ScheduleService();
 
-      if (!mounted) return;
-      setState(() {
-        _focusHours = results[0] as double;
-        _badgeCount = (results[1] as List).length;
-        _streakDays = StreakUtils.computeCurrentStreak(results[2] as List<HeatmapEntry>);
-        _todayItems = results[3] as List<ScheduleItem>;
-        _recentSessions = results[4] as List<PomodoroSession>;
-      });
-    } catch (e) {
-      // Silently handle errors - data stays at defaults
-    }
+    try { _focusHours = await focusService.getTotalFocusHours(userId); } catch (_) {}
+    try { _badgeCount = (await badgeService.getUserBadges(userId)).length; } catch (_) {}
+    try {
+      final heatmap = await gamificationService.getHeatmapData(userId, startDate: DateTime.now().subtract(const Duration(days: 90)));
+      _streakDays = StreakUtils.computeCurrentStreak(heatmap);
+    } catch (_) {}
+    try { _todayItems = await _loadTodayItems(userId); } catch (_) {}
+    try { _recentSessions = await focusService.getUserSessions(userId, limit: 3); } catch (_) {}
+
+    if (mounted) setState(() {});
   }
 
   Future<List<ScheduleItem>> _loadTodayItems(String userId) async {

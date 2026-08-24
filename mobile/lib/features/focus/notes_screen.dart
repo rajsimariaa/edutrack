@@ -127,11 +127,11 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
         ),
         onTap: () => _showEditNoteDialog(note),
         trailing: PopupMenuButton<String>(
-          onSelected: (value) {
+          onSelected: (value) async {
             if (value == 'edit') {
               _showEditNoteDialog(note);
             } else if (value == 'delete') {
-              _focusService.deleteNote(note.id);
+              await _focusService.deleteNote(note.id);
               _loadNotes();
             }
           },
@@ -182,14 +182,21 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               onPressed: () async {
                 final auth = ref.read(authProvider);
                 if (auth.user == null) return;
-                await _focusService.createNote(
-                  userId: auth.user!.id,
-                  chapterId: null,
-                  title: titleController.text,
-                  contentMd: contentController.text,
-                );
-                Navigator.pop(context);
-                _loadNotes();
+                try {
+                  await _focusService.createNote(
+                    userId: auth.user!.id,
+                    title: titleController.text.isNotEmpty ? titleController.text : 'Untitled',
+                    contentMd: contentController.text,
+                  );
+                  Navigator.pop(context);
+                  _loadNotes();
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to save note: $e'), backgroundColor: Colors.red),
+                    );
+                  }
+                }
               },
               child: const Text('Save Note'),
             ),

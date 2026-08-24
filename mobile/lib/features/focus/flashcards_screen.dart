@@ -111,10 +111,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
   }
 
   String _generateAnswer(String topicName, String chapterName, String moduleName, String subjectName) {
-    return '$topicName is a key concept in $chapterName '
-        'under the module $moduleName in $subjectName. '
-        'Review your textbook notes and class materials for the complete definition, '
-        'formulas, and examples related to this topic.';
+    return 'Topic: $topicName\n'
+        'Chapter: $chapterName\n'
+        'Module: $moduleName\n'
+        'Subject: $subjectName\n\n'
+        'This topic covers key concepts that you need to understand for $subjectName. '
+        'Focus on definitions, formulas, and applications related to $topicName. '
+        'Practice problems and review class notes for thorough preparation.';
   }
 
   void _flipCard() {

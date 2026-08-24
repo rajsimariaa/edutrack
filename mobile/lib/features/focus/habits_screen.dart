@@ -170,12 +170,20 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
   }
 
   Future<void> _checkIn(Habit habit) async {
-    await _focusService.checkInHabit(habitId: habit.id);
-    _loadData();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${habit.name} checked in!')),
-      );
+    try {
+      await _focusService.checkInHabit(habitId: habit.id);
+      _loadData();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${habit.name} checked in!'), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Check-in failed: $e'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
@@ -216,13 +224,21 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
                 onPressed: () async {
                   final auth = ref.read(authProvider);
                   if (auth.user == null || nameController.text.isEmpty) return;
-                  await _focusService.createHabit(
-                    userId: auth.user!.id,
-                    name: nameController.text,
-                    frequency: frequency,
-                  );
-                  Navigator.pop(context);
-                  _loadData();
+                  try {
+                    await _focusService.createHabit(
+                      userId: auth.user!.id,
+                      name: nameController.text,
+                      frequency: frequency,
+                    );
+                    Navigator.pop(context);
+                    _loadData();
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Failed to create habit: $e'), backgroundColor: Colors.red),
+                      );
+                    }
+                  }
                 },
                 child: const Text('Create Habit'),
               ),
