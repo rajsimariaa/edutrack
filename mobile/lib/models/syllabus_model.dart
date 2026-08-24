@@ -9,6 +9,7 @@ class Exam {
   final String category;
   final String? description;
   final bool isActive;
+  final DateTime? nextExamDate;
   final DateTime createdAt;
 
   Exam({
@@ -18,6 +19,7 @@ class Exam {
     required this.category,
     this.description,
     this.isActive = true,
+    this.nextExamDate,
     DateTime? createdAt,
   })  : id = id ?? _uuid.v4(),
         createdAt = createdAt ?? DateTime.now();
@@ -30,6 +32,9 @@ class Exam {
       category: json['category'],
       description: json['description'],
       isActive: json['is_active'] ?? true,
+      nextExamDate: json['next_exam_date'] != null
+          ? DateTime.parse(json['next_exam_date'])
+          : null,
       createdAt: DateTime.parse(json['created_at']),
     );
   }
@@ -41,6 +46,7 @@ class Exam {
         'category': category,
         'description': description,
         'is_active': isActive,
+        'next_exam_date': nextExamDate?.toIso8601String(),
         'created_at': createdAt.toIso8601String(),
       };
 }

@@ -22,6 +22,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   int _streakDays = 0;
   List<ScheduleItem> _todayItems = [];
   List<PomodoroSession> _recentSessions = [];
+  Exam? _userExam;
 
   @override
   void initState() {
@@ -53,6 +54,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     } catch (_) {}
     try { _todayItems = await _loadTodayItems(userId); } catch (_) {}
     try { _recentSessions = await focusService.getUserSessions(userId, limit: 3); } catch (_) {}
+
+    final examCategory = auth.profile?.examCategory;
+    if (examCategory != null && examCategory.isNotEmpty) {
+      try {
+        _userExam = await SyllabusService().getExamForCategory(examCategory);
+      } catch (_) {}
+    }
 
     if (mounted) setState(() {});
   }
@@ -92,6 +100,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildWelcomeCard(context, auth),
+              if (_userExam?.nextExamDate != null) ...[
+                const SizedBox(height: 16),
+                _buildExamCountdown(),
+              ],
               const SizedBox(height: 16),
               _buildQuickStats(context),
               const SizedBox(height: 16),
@@ -163,6 +175,83 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildExamCountdown() {
+    final exam = _userExam!;
+    final daysLeft = exam.nextExamDate!.difference(DateTime.now()).inDays;
+    final color = daysLeft <= 30
+        ? AppColors.error ?? Colors.red
+        : daysLeft <= 90
+            ? AppColors.streak
+            : AppColors.primary;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.timer_outlined, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Days until ${exam.name}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  exam.nextExamDate.toString().substring(0, 10),
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$daysLeft',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'days',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ],
           ),
         ],
       ),
