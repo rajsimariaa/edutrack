@@ -52,8 +52,19 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
 
   Future<void> _pauseTimer() async {
     _timer?.cancel();
+    final auth = ref.read(authProvider);
     if (_currentSessionId != null) {
       await _focusService.completePomodoro(_currentSessionId!);
+      if (auth.user != null) {
+        final elapsedMins = (_totalSeconds - _remainingSeconds) ~/ 60;
+        if (elapsedMins > 0) {
+          await GamificationService().updateHeatmapEntry(
+            userId: auth.user!.id,
+            date: DateTime.now(),
+            focusMins: elapsedMins,
+          );
+        }
+      }
       _currentSessionId = null;
     }
     setState(() => _isRunning = false);
@@ -61,8 +72,19 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
 
   Future<void> _stopTimer() async {
     _timer?.cancel();
+    final auth = ref.read(authProvider);
     if (_currentSessionId != null) {
       await _focusService.completePomodoro(_currentSessionId!);
+      if (auth.user != null) {
+        final elapsedMins = (_totalSeconds - _remainingSeconds) ~/ 60;
+        if (elapsedMins > 0) {
+          await GamificationService().updateHeatmapEntry(
+            userId: auth.user!.id,
+            date: DateTime.now(),
+            focusMins: elapsedMins,
+          );
+        }
+      }
       _currentSessionId = null;
     }
     setState(() {
@@ -86,6 +108,10 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
       date: DateTime.now(),
       focusMins: _totalSeconds ~/ 60,
     );
+
+    try {
+      await BadgeService().evaluateAndAwardBadges(auth.user!.id);
+    } catch (_) {}
 
     setState(() {
       _isRunning = false;

@@ -305,13 +305,24 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
         leading: GestureDetector(
-          onTap: () {
-            _scheduleService.updateItemStatus(
-              item.id,
-              isCompleted
-                  ? ScheduleItemStatus.pending
-                  : ScheduleItemStatus.completed,
-            );
+          onTap: () async {
+            final newStatus = isCompleted
+                ? ScheduleItemStatus.pending
+                : ScheduleItemStatus.completed;
+            await _scheduleService.updateItemStatus(item.id, newStatus);
+            if (!isCompleted) {
+              final auth = ref.read(authProvider);
+              if (auth.user != null) {
+                await GamificationService().updateHeatmapEntry(
+                  userId: auth.user!.id,
+                  date: DateTime.now(),
+                  tasksCompleted: 1,
+                );
+                try {
+                  await BadgeService().evaluateAndAwardBadges(auth.user!.id);
+                } catch (_) {}
+              }
+            }
             _loadData();
           },
           child: Container(

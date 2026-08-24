@@ -1,21 +1,7 @@
-v3.0.0 - Complete App Overhaul
+v3.0.1 - Flashcard Fix
 
-NEW FEATURES:
-- Flashcards: Flip-card study mode with subject picker, shuffle, known/review tracking, 3D flip animation. Access from Home or Focus screen.
-- Analytics Dashboard: Subject progress bars, weekly activity chart, test performance stats, streak tracking. Access from Profile menu.
-- Week Calendar: Schedule now shows a week view with tap-to-select days.
-
-CONTENT (18 tests, 90 questions across ALL exams):
-- CA Foundation: 3 tests (15 questions)
-- CA Intermediate: 2 tests (10 questions)
-- CA Final: 2 tests (10 questions)
-- CS Executive: 1 test (5 questions)
-- CMA Foundation: 2 tests (10 questions)
-- CFA Level 1: 2 tests (10 questions)
-- JEE Main: 2 tests (10 questions)
-- JEE Advanced: 2 tests (10 questions)
-- NEET UG: 2 tests (10 questions)
-
-GAMIFICATION:
-- 10 badges (First Steps, Week Warrior, Quiz Master, Perfect Score, Bookworm, Focus Champion, Marathon Runner, Knowledge Seeker, Speed Demon, Team Player)
-- Weekly leaderboard with rankings
+BUG FIXES:
+- Fixed flashcard flip animation not working (replaced broken AnimatedSwitcher with proper AnimationController + AnimatedBuilder 3D rotation)
+- Flashcards now shuffle randomly every time you select a subject
+- Back content always readable (correct mirroring transform)
+- Subject picker shows ALL subjects for your exam

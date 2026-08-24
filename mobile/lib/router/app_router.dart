@@ -23,6 +23,7 @@ import '../features/focus/habits_screen.dart';
 import '../features/focus/flashcards_screen.dart';
 import '../features/gamification/peer_rooms_screen.dart';
 import '../features/profile/analytics_screen.dart';
+import '../features/settings/reminder_settings_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -118,6 +119,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/gamification/leaderboard',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const LeaderboardScreen(),
+      ),
+      GoRoute(
+        path: '/profile/reminders',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ReminderSettingsScreen(),
       ),
     ],
   );

@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
 import '../models/models.dart';
+import '../utils/streak_utils.dart';
 import 'focus_service.dart';
 import 'test_service.dart';
 import 'syllabus_service.dart';
@@ -73,33 +74,33 @@ class BadgeService {
       final criteria = badge.criteriaJson;
       bool earned = false;
 
-      if (criteria.containsKey('focus_hours')) {
-        final hours = await FocusService().getTotalFocusHours(userId);
-        earned = hours >= (criteria['focus_hours'] as num).toDouble();
-      } else if (criteria.containsKey('tests_completed')) {
+      final type = criteria['type'] as String?;
+      final count = (criteria['count'] as num?)?.toInt() ?? 0;
+
+      if (type == 'focus_sessions') {
+        final subs = await FocusService().getUserSessions(userId);
+        final completed = subs.where((s) => s.status == 'completed').length;
+        earned = completed >= count;
+      } else if (type == 'tests_completed') {
         final subs = await TestService().getUserSubmissions(userId);
-        earned = subs.length >= (criteria['tests_completed'] as num).toInt();
-      } else if (criteria.containsKey('streak_days')) {
+        earned = subs.length >= count;
+      } else if (type == 'streak') {
         final heatmap = await GamificationService().getHeatmapData(userId, startDate: DateTime.now().subtract(const Duration(days: 365)));
-        int streak = 0;
-        final today = DateTime.now();
-        for (int i = 0; i < 365; i++) {
-          final date = today.subtract(Duration(days: i));
-          final hasEntry = heatmap.any((h) =>
-              h.activityDate.year == date.year &&
-              h.activityDate.month == date.month &&
-              h.activityDate.day == date.day);
-          if (hasEntry) {
-            streak++;
-          } else if (i > 0) {
-            break;
-          }
-        }
-        earned = streak >= (criteria['streak_days'] as num).toInt();
-      } else if (criteria.containsKey('topics_mastered')) {
+        final streak = StreakUtils.computeCurrentStreak(heatmap);
+        earned = streak >= count;
+      } else if (type == 'perfect_score') {
+        final subs = await TestService().getUserSubmissions(userId);
+        earned = subs.any((s) => (s.score as num?)?.toDouble() == 100.0);
+      } else if (type == 'topics_mastered') {
         final progress = await SyllabusService().getUserProgress(userId);
         int mastered = progress.where((p) => p.status == TopicStatus.mastered).length;
-        earned = mastered >= (criteria['topics_mastered'] as num).toInt();
+        earned = mastered >= count;
+      } else if (type == 'fast_test') {
+        final subs = await TestService().getUserSubmissions(userId);
+        earned = subs.any((s) => (s.timeTakenMins as num?)?.toInt() != null && (s.timeTakenMins as num) <= 10);
+      } else if (type == 'join_room') {
+        final rooms = await GamificationService().getPeerRooms(userId);
+        earned = rooms.isNotEmpty;
       }
 
       if (earned) {

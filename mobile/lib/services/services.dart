@@ -7,3 +7,4 @@ export 'gamification_service.dart';
 export 'schedule_service.dart';
 export 'test_service.dart';
 export 'resource_service.dart';
+export 'reminder_service.dart';

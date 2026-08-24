@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'config/env.dart';
 import 'services/supabase_service.dart';
+import 'services/reminder_service.dart';
 import 'theme/app_theme.dart';
 import 'router/app_router.dart';
 
@@ -34,6 +35,13 @@ void main() async {
     await SupabaseService.initialize();
   } catch (e) {
     debugPrint('CRITICAL: Supabase init failed: $e');
+  }
+
+  try {
+    await ReminderService().init();
+    await ReminderService().requestPermission();
+  } catch (e) {
+    debugPrint('Reminder init failed: $e');
   }
 
   runApp(

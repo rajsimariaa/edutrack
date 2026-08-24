@@ -7,6 +7,7 @@ import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/exam_utils.dart';
+import '../../utils/streak_utils.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -49,7 +50,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       setState(() {
         _focusHours = results[0] as double;
         _badgeCount = (results[1] as List).length;
-        _streakDays = _computeStreak(results[2] as List<HeatmapEntry>);
+        _streakDays = StreakUtils.computeCurrentStreak(results[2] as List<HeatmapEntry>);
         _todayItems = results[3] as List<ScheduleItem>;
         _recentSessions = results[4] as List<PomodoroSession>;
       });
@@ -62,25 +63,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final schedule = await ScheduleService().getActiveSchedule(userId);
     if (schedule == null) return [];
     return ScheduleService().getScheduleItems(schedule.id, date: DateTime.now());
-  }
-
-  int _computeStreak(List<HeatmapEntry> heatmap) {
-    if (heatmap.isEmpty) return 0;
-    final today = DateTime.now();
-    int streak = 0;
-    for (int i = 0; i < 365; i++) {
-      final date = today.subtract(Duration(days: i));
-      final hasEntry = heatmap.any((h) =>
-          h.activityDate.year == date.year &&
-          h.activityDate.month == date.month &&
-          h.activityDate.day == date.day);
-      if (hasEntry) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
-    }
-    return streak;
   }
 
   @override
@@ -99,7 +81,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
+            onPressed: () => context.push('/profile/reminders'),
           ),
         ],
       ),

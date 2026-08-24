@@ -5,6 +5,7 @@ import '../../providers/auth_provider.dart';
 import '../../services/services.dart';
 import '../../models/models.dart' as models;
 import '../../theme/app_theme.dart';
+import '../../utils/streak_utils.dart';
 
 class GamificationScreen extends ConsumerStatefulWidget {
   const GamificationScreen({super.key});
@@ -50,45 +51,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
   }
 
   void _computeStreaks() {
-    _totalDays = _heatmap.length;
-    if (_heatmap.isEmpty) return;
-
-    final sorted = List<models.HeatmapEntry>.from(_heatmap)
-      ..sort((a, b) => a.activityDate.compareTo(b.activityDate));
-
-    final today = DateTime.now();
-    _currentStreak = 0;
-    for (int i = 0; i < 365; i++) {
-      final date = today.subtract(Duration(days: i));
-      final hasEntry = sorted.any((h) =>
-          h.activityDate.year == date.year &&
-          h.activityDate.month == date.month &&
-          h.activityDate.day == date.day);
-      if (hasEntry) {
-        _currentStreak++;
-      } else if (i > 0) {
-        break;
-      }
-    }
-
-    _longestStreak = 0;
-    int tempStreak = 0;
-    DateTime? prevDate;
-    for (final entry in sorted) {
-      if (prevDate != null) {
-        final diff = entry.activityDate.difference(prevDate).inDays;
-        if (diff == 1) {
-          tempStreak++;
-        } else {
-          _longestStreak = _longestStreak > tempStreak ? _longestStreak : tempStreak;
-          tempStreak = 1;
-        }
-      } else {
-        tempStreak = 1;
-      }
-      prevDate = entry.activityDate;
-    }
-    _longestStreak = _longestStreak > tempStreak ? _longestStreak : tempStreak;
+    _totalDays = StreakUtils.computeTotalDays(_heatmap);
+    _currentStreak = StreakUtils.computeCurrentStreak(_heatmap);
+    _longestStreak = StreakUtils.computeLongestStreak(_heatmap);
   }
 
   @override
@@ -192,9 +157,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
 
         final intensity = entry == null
             ? 0
-            : entry.tasksCompleted > 3
+            : (entry.tasksCompleted + entry.focusMins ~/ 15) > 3
                 ? 3
-                : entry.tasksCompleted > 1
+                : (entry.tasksCompleted + entry.focusMins ~/ 15) > 1
                     ? 2
                     : 1;
 

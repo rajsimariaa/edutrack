@@ -7,6 +7,7 @@ import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/exam_utils.dart';
+import '../../utils/streak_utils.dart';
 
 class AnalyticsScreen extends ConsumerStatefulWidget {
   const AnalyticsScreen({super.key});
@@ -83,7 +84,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
         ));
       }
 
-      final streak = _computeStreak(heatmap);
+      final streak = StreakUtils.computeCurrentStreak(heatmap);
       final weekly = _computeWeeklyActivity(heatmap);
 
       if (!mounted) return;
@@ -103,25 +104,6 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen> {
       if (!mounted) return;
       setState(() => _isLoading = false);
     }
-  }
-
-  int _computeStreak(List<HeatmapEntry> heatmap) {
-    if (heatmap.isEmpty) return 0;
-    final today = DateTime.now();
-    int streak = 0;
-    for (int i = 0; i < 365; i++) {
-      final date = today.subtract(Duration(days: i));
-      final hasEntry = heatmap.any((h) =>
-          h.activityDate.year == date.year &&
-          h.activityDate.month == date.month &&
-          h.activityDate.day == date.day);
-      if (hasEntry) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
-    }
-    return streak;
   }
 
   List<_DailyActivity> _computeWeeklyActivity(List<HeatmapEntry> heatmap) {

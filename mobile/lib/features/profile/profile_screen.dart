@@ -7,6 +7,7 @@ import '../../services/services.dart';
 import '../../models/models.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/exam_utils.dart';
+import '../../utils/streak_utils.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
@@ -44,31 +45,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       if (!mounted) return;
       setState(() {
         _badgeCount = (results[0] as List).length;
-        _streakDays = _computeStreak(results[1] as List<HeatmapEntry>);
+        _streakDays = StreakUtils.computeCurrentStreak(results[1] as List<HeatmapEntry>);
         _focusHours = results[2] as double;
       });
     } catch (e) {
       // Silently handle errors - data stays at defaults
     }
-  }
-
-  int _computeStreak(List<HeatmapEntry> heatmap) {
-    if (heatmap.isEmpty) return 0;
-    final today = DateTime.now();
-    int streak = 0;
-    for (int i = 0; i < 365; i++) {
-      final date = today.subtract(Duration(days: i));
-      final hasEntry = heatmap.any((h) =>
-          h.activityDate.year == date.year &&
-          h.activityDate.month == date.month &&
-          h.activityDate.day == date.day);
-      if (hasEntry) {
-        streak++;
-      } else if (i > 0) {
-        break;
-      }
-    }
-    return streak;
   }
 
   @override
@@ -361,6 +343,12 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             Icons.history,
             'Test History',
             () => context.go('/tests'),
+          ),
+          const Divider(height: 1),
+          _buildMenuItem(
+            Icons.notifications_outlined,
+            'Study Reminders',
+            () => context.push('/profile/reminders'),
           ),
           const Divider(height: 1),
           _buildMenuItem(

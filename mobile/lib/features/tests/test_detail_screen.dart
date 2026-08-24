@@ -123,6 +123,16 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       answers: answersJson,
     );
 
+    await GamificationService().updateHeatmapEntry(
+      userId: userId,
+      date: DateTime.now(),
+      tasksCompleted: 1,
+    );
+
+    try {
+      await BadgeService().evaluateAndAwardBadges(userId);
+    } catch (_) {}
+
     setState(() => _isSubmitted = true);
   }
 
