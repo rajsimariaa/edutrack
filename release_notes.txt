@@ -1,7 +1,18 @@
-v3.0.1 - Flashcard Fix
+v3.1.0 - Study Reminders, Streak Fix, Heatmap Fix
+
+NEW FEATURES:
+- Study Reminders: Daily notifications with random motivational messages
+  - Time picker with quick presets (7AM, 9AM, 12PM, 2PM, 5PM, 8PM, 10PM)
+  - Toggle on/off from Profile > Study Reminders or Home notification bell
+  - Works even when app is closed
 
 BUG FIXES:
-- Fixed flashcard flip animation not working (replaced broken AnimatedSwitcher with proper AnimationController + AnimatedBuilder 3D rotation)
-- Flashcards now shuffle randomly every time you select a subject
-- Back content always readable (correct mirroring transform)
-- Subject picker shows ALL subjects for your exam
+- Heatmap not showing data: Grid now considers both tasks AND focus minutes for color intensity
+- Streaks always showing 0: Heatmap entries are now created when you complete focus sessions, submit tests, or complete schedule items
+- Badge system broken: Fixed criteria matching (badges use {type, count} format)
+- Badges now auto-awarded after activities
+
+NEW BADGE:
+- Streak Master: Maintain a 10-day study streak (Rare, 150 points)
+
+Total badges: 11 (First Steps, Week Warrior, Streak Master, Quiz Master, Perfect Score, Bookworm, Focus Champion, Marathon Runner, Knowledge Seeker, Speed Demon, Team Player)

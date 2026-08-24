@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -45,6 +46,30 @@ class ReminderService {
         ?.createNotificationChannel(androidChannel);
 
     _initialized = true;
+
+    // Re-schedule notification on every app launch (fixes app-killed scenario)
+    final enabled = await isEnabled();
+    if (enabled) {
+      final hour = await getReminderHour();
+      final minute = await getReminderMinute();
+      await _scheduleDailyReminder(hour, minute);
+    }
+  }
+
+  Future<bool> requestPermissions() async {
+    if (Platform.isAndroid) {
+      final android = _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      if (android != null) {
+        // POST_NOTIFICATIONS permission (Android 13+)
+        final granted = await android.requestNotificationsPermission();
+        // SCHEDULE_EXACT_ALARM permission (Android 12+)
+        await android.requestExactAlarmsPermission();
+        return granted ?? false;
+      }
+    }
+    return true;
   }
 
   Future<bool> isEnabled() async {
@@ -80,30 +105,42 @@ class ReminderService {
   }
 
   Future<void> _scheduleDailyReminder(int hour, int minute) async {
+    // Cancel any existing scheduled notification first
+    await _plugin.cancel(_notificationId);
+
+    final scheduledTime = _nextInstanceOfTime(hour, minute);
+
+    // Use exactAllowWhileIdle for reliable delivery when app is killed
     await _plugin.zonedSchedule(
       _notificationId,
-      'Time to Study! 📚',
+      'Time to Study!',
       _getRandomMessage(),
-      _nextInstanceOfTime(hour, minute),
+      scheduledTime,
       const NotificationDetails(
         android: AndroidNotificationDetails(
           _channelId,
           _channelName,
-          channelDescription: 'Daily study reminders',
+          channelDescription: 'Daily study reminders to keep you on track',
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
+          enableVibration: true,
+          enableLights: true,
+          ongoing: false,
+          autoCancel: true,
         ),
       ),
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
   tz.TZDateTime _nextInstanceOfTime(int hour, int minute) {
     final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
+    var scheduledDate =
+        tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -127,12 +164,22 @@ class ReminderService {
     return messages[index];
   }
 
-  Future<void> requestPermission() async {
-    final android = _plugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>();
-    if (android != null) {
-      await android.requestNotificationsPermission();
-    }
+  /// Debug method to test notification immediately
+  Future<void> showTestNotification() async {
+    await _plugin.show(
+      _notificationId,
+      'Test Notification',
+      'If you see this, notifications are working!',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          _channelId,
+          _channelName,
+          channelDescription: 'Test notification',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/ic_launcher',
+        ),
+      ),
+    );
   }
 }

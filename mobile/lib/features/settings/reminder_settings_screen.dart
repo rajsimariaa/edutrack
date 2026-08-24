@@ -35,6 +35,18 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
   }
 
   Future<void> _toggleReminder(bool value) async {
+    if (value) {
+      final granted = await _reminderService.requestPermissions();
+      if (!granted && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notification permission required. Please enable it in Settings.'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+    }
     setState(() => _isEnabled = value);
     await _reminderService.setReminder(
       enabled: value,
@@ -252,6 +264,28 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
                       ),
                     ),
                   ],
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        await _reminderService.showTestNotification();
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Test notification sent! Check your notification shade.'),
+                              backgroundColor: Colors.blue,
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.send, size: 18),
+                      label: const Text('Send Test Notification'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 48),
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.all(16),
