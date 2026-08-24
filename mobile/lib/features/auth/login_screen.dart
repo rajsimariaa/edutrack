@@ -118,25 +118,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   },
                 ),
                 const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      final email = _emailController.text.trim();
-                      if (email.isEmpty || !email.contains('@')) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Enter your email first')),
-                        );
-                        return;
-                      }
-                      ref.read(authProvider.notifier).resetPassword(email);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Password reset email sent!')),
-                      );
-                    },
-                    child: const Text('Forgot Password?'),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () async {
+                        final email = _emailController.text.trim();
+                        if (email.isEmpty || !email.contains('@')) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Enter your email first')),
+                          );
+                          return;
+                        }
+                        try {
+                          await ref.read(authProvider.notifier).resetPassword(email);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Password reset email sent!'), backgroundColor: Colors.green),
+                            );
+                          }
+                        } catch (_) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Failed to send reset email'), backgroundColor: Colors.red),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Forgot Password?'),
+                    ),
                   ),
-                ),
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: auth.isLoading ? null : _login,

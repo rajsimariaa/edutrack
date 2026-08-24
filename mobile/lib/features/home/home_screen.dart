@@ -29,6 +29,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _loadData();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadData();
+  }
+
   Future<void> _loadData() async {
     final auth = ref.read(authProvider);
     final userId = auth.user?.id;

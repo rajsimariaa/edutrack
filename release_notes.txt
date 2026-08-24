@@ -1,24 +1,30 @@
-v3.1.5 - Critical Bug Fixes + More Tests
+v3.1.6 - Full Bug Fix Pass
 
 BUG FIXES:
 
-Notes:
-- Fixed notes not saving (DB had NOT NULL constraint on chapter_id)
-- chapterId now nullable in model and DB
-- Added error handling with snackbar feedback on save failures
+Flashcards:
+- Back content now scrolls when text is too long (was overflowing)
+- Improved answer generation with actual study tips per topic
+- Answers now include key points, formulas, practice tips
 
-Habits:
-- Added error handling for habit creation and check-in
-- Failed operations now show red error snackbar
+Focus Timer:
+- Pause no longer incorrectly marks session as completed
+- Fixed crash when completing session with no user logged in
+- Clean session lifecycle: start -> pause/save progress -> resume or stop
+
+Test Timer:
+- Replaced fragile Future.doWhile with proper Timer.periodic
+- Timer properly cancels on screen dispose and retake
+- No more ghost timers running after leaving the screen
 
 Home Screen:
-- Fixed all stats going blank when any single API call fails
-- Each stat loads independently - one failure no longer kills everything
+- Data now refreshes when returning to home (was showing stale data)
+- Stats update immediately after completing activities
 
-Flashcards:
-- Improved back-side content with more useful context per topic
+Auth:
+- Password reset now shows success/error AFTER the API call completes
+- No more false "email sent" messages
 
-MORE CONTENT:
-- Added 17 new mock tests across all 9 exams (CA, CS, CMA, CFA, JEE, NEET)
-- 85 new questions with explanations
-- Each exam now has 4-5 tests available
+Tests:
+- Fixed crash when loading submissions for deleted tests
+- Graceful fallback when test join fails

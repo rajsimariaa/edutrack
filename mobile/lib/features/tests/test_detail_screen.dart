@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,11 +25,18 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
   bool _isSubmitted = false;
   int _remainingSeconds = 0;
   bool _timerActive = false;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   Future<void> _loadData() async {
@@ -47,15 +55,18 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
   }
 
   void _startTimer() {
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!_timerActive || _isSubmitted) return false;
+    _timer?.cancel();
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!_timerActive || _isSubmitted) {
+        timer.cancel();
+        return;
+      }
       if (_remainingSeconds > 0) {
         setState(() => _remainingSeconds--);
-        return true;
+      } else {
+        timer.cancel();
+        _submitTest();
       }
-      _submitTest();
-      return false;
     });
   }
 
@@ -540,6 +551,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
+                  _timer?.cancel();
                   setState(() {
                     _isSubmitted = false;
                     _currentQuestion = 0;

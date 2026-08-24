@@ -111,13 +111,15 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
   }
 
   String _generateAnswer(String topicName, String chapterName, String moduleName, String subjectName) {
-    return 'Topic: $topicName\n'
-        'Chapter: $chapterName\n'
-        'Module: $moduleName\n'
-        'Subject: $subjectName\n\n'
-        'This topic covers key concepts that you need to understand for $subjectName. '
-        'Focus on definitions, formulas, and applications related to $topicName. '
-        'Practice problems and review class notes for thorough preparation.';
+    return '$topicName is a key concept in $chapterName '
+        'under $moduleName in $subjectName.\n\n'
+        'Key points to remember:\n'
+        '- Understand the core definition and meaning\n'
+        '- Learn the important formulas or rules related to this topic\n'
+        '- Practice solving problems based on $topicName\n'
+        '- Connect this concept with other topics in $chapterName\n'
+        '- Review your class notes and textbook examples\n\n'
+        'Tip: Try teaching this concept to someone else to test your understanding.';
   }
 
   void _flipCard() {
@@ -588,7 +590,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
         ],
       ),
       child: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -611,9 +613,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.textPrimary,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  height: 1.4,
+                  height: 1.5,
                 ),
               ),
             ],

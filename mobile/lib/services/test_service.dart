@@ -94,16 +94,17 @@ class TestService {
     String userId, {
     int limit = 20,
   }) async {
-    final data = await _supabase
-        .from('user_test_submissions')
-        .select('''
-          *,
-          tests!inner(title, total_marks, exam_id)
-        ''')
-        .eq('user_id', userId)
-        .order('submitted_at', ascending: false)
-        .limit(limit);
-    return (data as List).map((e) => UserTestSubmission.fromJson(e)).toList();
+    try {
+      final data = await _supabase
+          .from('user_test_submissions')
+          .select()
+          .eq('user_id', userId)
+          .order('submitted_at', ascending: false)
+          .limit(limit);
+      return (data as List).map((e) => UserTestSubmission.fromJson(e)).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Future<Map<String, dynamic>> getTestStats(String userId) async {
