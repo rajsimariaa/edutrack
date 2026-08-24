@@ -1,18 +1,11 @@
-v3.1.0 - Study Reminders, Streak Fix, Heatmap Fix
+v3.1.1 - Fix Notifications When App Is Killed
 
-NEW FEATURES:
-- Study Reminders: Daily notifications with random motivational messages
-  - Time picker with quick presets (7AM, 9AM, 12PM, 2PM, 5PM, 8PM, 10PM)
-  - Toggle on/off from Profile > Study Reminders or Home notification bell
-  - Works even when app is closed
-
-BUG FIXES:
-- Heatmap not showing data: Grid now considers both tasks AND focus minutes for color intensity
-- Streaks always showing 0: Heatmap entries are now created when you complete focus sessions, submit tests, or complete schedule items
-- Badge system broken: Fixed criteria matching (badges use {type, count} format)
-- Badges now auto-awarded after activities
-
-NEW BADGE:
-- Streak Master: Maintain a 10-day study streak (Rare, 150 points)
-
-Total badges: 11 (First Steps, Week Warrior, Streak Master, Quiz Master, Perfect Score, Bookworm, Focus Champion, Marathon Runner, Knowledge Seeker, Speed Demon, Team Player)
+BUG FIX:
+- Notifications now fire reliably even when app is closed/killed
+- Changed to exact alarms (exactAllowWhileIdle) for guaranteed delivery
+- Added USE_EXACT_ALARM permission for Android 14+ compatibility
+- Added WAKE_LOCK to prevent CPU sleep before notification delivery
+- Notification receivers re-exported so BOOT_COMPLETED works after reboot
+- Notifications auto-re-schedule on every app launch
+- Added POST_NOTIFICATIONS runtime permission request (Android 13+)
+- Added 'Send Test Notification' button for instant verification
