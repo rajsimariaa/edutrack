@@ -79,7 +79,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
           final topics = await _syllabusService.getTopics(chapter.id);
           for (final topic in topics) {
             final desc = topic.description ?? '';
-            final hasGoodDescription = desc.length > 10;
+            final hasGoodDescription = desc.length > 5;
 
             final front = 'What is ${topic.name}?';
             final back = hasGoodDescription

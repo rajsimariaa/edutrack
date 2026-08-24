@@ -153,7 +153,7 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Row(
+                      Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Expanded(
@@ -165,7 +165,29 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
                           ],
                         ),
                       ),
-                      if (members.any((m) => (m['user_id'] as String) == auth.user?.id))
+                      if (room.createdBy == auth.user?.id)
+                        TextButton(
+                          onPressed: () async {
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text('Delete Room?'),
+                                content: Text('Delete "${room.name}"? All members will be removed.'),
+                                actions: [
+                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+                                  TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Delete', style: TextStyle(color: AppColors.error))),
+                                ],
+                              ),
+                            );
+                            if (confirm == true && context.mounted) {
+                              await _gamificationService.deletePeerRoom(auth.user!.id, room.id);
+                              Navigator.pop(context);
+                              _loadData();
+                            }
+                          },
+                          child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+                        )
+                      else
                         TextButton(
                           onPressed: () async {
                             await _gamificationService.leavePeerRoom(auth.user!.id, room.id);
@@ -174,7 +196,7 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
                               _loadData();
                             }
                           },
-                          child: const Text('Leave Room', style: TextStyle(color: AppColors.error)),
+                          child: const Text('Leave', style: TextStyle(color: AppColors.error)),
                         ),
                     ],
                   ),

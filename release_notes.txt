@@ -1,30 +1,13 @@
-v3.1.6 - Full Bug Fix Pass
+v3.1.7 - Real Flashcard Answers + Peer Room Delete
 
-BUG FIXES:
+FLASHCARDS:
+- All 71 topics now have real educational answers
+- Answers give actual definitions, formulas, and explanations
+- Example: "What is a Contract?" -> "An agreement enforceable by law between 2+ parties..."
+- Threshold lowered to show DB answers for all topics
 
-Flashcards:
-- Back content now scrolls when text is too long (was overflowing)
-- Improved answer generation with actual study tips per topic
-- Answers now include key points, formulas, practice tips
-
-Focus Timer:
-- Pause no longer incorrectly marks session as completed
-- Fixed crash when completing session with no user logged in
-- Clean session lifecycle: start -> pause/save progress -> resume or stop
-
-Test Timer:
-- Replaced fragile Future.doWhile with proper Timer.periodic
-- Timer properly cancels on screen dispose and retake
-- No more ghost timers running after leaving the screen
-
-Home Screen:
-- Data now refreshes when returning to home (was showing stale data)
-- Stats update immediately after completing activities
-
-Auth:
-- Password reset now shows success/error AFTER the API call completes
-- No more false "email sent" messages
-
-Tests:
-- Fixed crash when loading submissions for deleted tests
-- Graceful fallback when test join fails
+PEER ROOMS:
+- Added delete option for rooms you created
+- Shows confirmation dialog before deleting
+- Removes all members and the room
+- Non-creators can still leave the room

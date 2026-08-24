@@ -180,6 +180,18 @@ class GamificationService {
         .eq('user_id', userId);
   }
 
+  Future<void> deletePeerRoom(String userId, String roomId) async {
+    await _supabase
+        .from('peer_room_members')
+        .delete()
+        .eq('room_id', roomId);
+    await _supabase
+        .from('peer_rooms')
+        .delete()
+        .eq('id', roomId)
+        .eq('created_by', userId);
+  }
+
   String _generateRoomCode() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rng = DateTime.now().millisecondsSinceEpoch;
