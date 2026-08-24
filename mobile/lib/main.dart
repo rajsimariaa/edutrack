@@ -39,15 +39,7 @@ void main() async {
 
   try {
     await ReminderService().init();
-    final granted = await ReminderService().requestPermissions();
-    debugPrint('Notification permissions granted: $granted');
-    // Re-schedule on every launch to survive app kills
-    final enabled = await ReminderService().isEnabled();
-    if (enabled) {
-      final hour = await ReminderService().getReminderHour();
-      final minute = await ReminderService().getReminderMinute();
-      await ReminderService().setReminder(enabled: true, hour: hour, minute: minute);
-    }
+    debugPrint('Reminder service initialized');
   } catch (e) {
     debugPrint('Reminder init failed: $e');
   }

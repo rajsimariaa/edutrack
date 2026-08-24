@@ -3,11 +3,10 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
 
     <application
         android:label="edutrack"
@@ -21,9 +20,7 @@
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize"
-            android:showWhenLocked="true"
-            android:turnScreenOn="true">
+            android:windowSoftInputMode="adjustResize">
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
@@ -43,17 +40,7 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <service
-            android:name="com.dexterous.flutterlocalnotifications.ForegroundService"
-            android:exported="false"
-            android:stopWithTask="false"
-            android:foregroundServiceType="specialUse">
-            <property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" android:value="Study reminder notification"/>
-        </service>
-
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ActionBroadcastReceiver" />
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+        <receiver android:exported="false" android:name="com.flutterbackgroundservice.MyBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
