@@ -1,4 +1,3 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'supabase_service.dart';
 import '../models/models.dart';
 
@@ -108,6 +107,61 @@ class SyllabusService {
         if (status == TopicStatus.mastered) 'mastered_at': now,
       });
     }
+  }
+
+  Future<List<Topic>> getTopicsByIds(List<String> topicIds) async {
+    if (topicIds.isEmpty) return [];
+    final data = await _supabase
+        .from('topics')
+        .select()
+        .inFilter('id', topicIds);
+    return (data as List).map((e) => Topic.fromJson(e)).toList();
+  }
+
+  Future<Map<String, String>> getTopicChapterSubjectMap(
+      List<String> topicIds) async {
+    if (topicIds.isEmpty) return {};
+    final topics = await getTopicsByIds(topicIds);
+    final chapterIds = topics.map((t) => t.chapterId).toSet().toList();
+    final chapters = await _supabase
+        .from('chapters')
+        .select('id, module_id')
+        .inFilter('id', chapterIds);
+    final chapterMap = <String, String>{};
+    for (final c in chapters) {
+      chapterMap[c['id'] as String] = c['module_id'] as String;
+    }
+    final moduleIds = chapterMap.values.toSet().toList();
+    final modules = await _supabase
+        .from('modules')
+        .select('id, subject_id')
+        .inFilter('id', moduleIds);
+    final moduleMap = <String, String>{};
+    for (final m in modules) {
+      moduleMap[m['id'] as String] = m['subject_id'] as String;
+    }
+    final subjectIds = moduleMap.values.toSet().toList();
+    final subjects = await _supabase
+        .from('subjects')
+        .select('id, name')
+        .inFilter('id', subjectIds);
+    final subjectNameMap = <String, String>{};
+    for (final s in subjects) {
+      subjectNameMap[s['id'] as String] = s['name'] as String;
+    }
+    final result = <String, String>{};
+    for (final topic in topics) {
+      final moduleId = chapterMap[topic.chapterId];
+      final subjectId = moduleId != null ? moduleMap[moduleId] : null;
+      if (subjectId != null) {
+        result[topic.id] = subjectNameMap[subjectId] ?? 'Unknown';
+      }
+    }
+    return result;
+  }
+
+  Future<void> updateTopicDifficulty(String topicId, String difficulty) async {
+    await _supabase.from('topics').update({'difficulty': difficulty}).eq('id', topicId);
   }
 
   Future<Map<String, double>> getSubjectProgress(

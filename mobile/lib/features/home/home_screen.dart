@@ -181,14 +181,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  DateTime? _getAdjustedExamDate(Exam exam, int? targetYear) {
+    if (exam.nextExamDate == null) return null;
+    final dbYear = exam.nextExamDate!.year;
+    final year = targetYear ?? dbYear;
+    if (year == dbYear) return exam.nextExamDate;
+    return DateTime(year, exam.nextExamDate!.month, exam.nextExamDate!.day);
+  }
+
   Widget _buildExamCountdown() {
+    final auth = ref.read(authProvider);
+    final targetYear = auth.profile?.targetYear;
     final exam = _userExam!;
-    final daysLeft = exam.nextExamDate!.difference(DateTime.now()).inDays;
+    final examDate = _getAdjustedExamDate(exam, targetYear);
+    if (examDate == null) return const SizedBox.shrink();
+
+    final now = DateTime.now();
+    final daysLeft = examDate.difference(now).inDays;
     final color = daysLeft <= 30
-        ? AppColors.error ?? Colors.red
+        ? AppColors.error
         : daysLeft <= 90
             ? AppColors.streak
             : AppColors.primary;
+
+    final dateStr = '${examDate.year}-${examDate.month.toString().padLeft(2, '0')}-${examDate.day.toString().padLeft(2, '0')}';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -222,7 +238,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  exam.nextExamDate.toString().substring(0, 10),
+                  '$dateStr (${examDate.year})',
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -396,8 +412,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final actions = [
       {'icon': Icons.play_arrow_rounded, 'label': 'Start\nFocus', 'route': '/focus', 'color': AppColors.primary, 'isTab': true},
       {'icon': Icons.quiz_outlined, 'label': 'Take\nTest', 'route': '/tests', 'color': AppColors.secondary, 'isTab': true},
+      {'icon': Icons.school_outlined, 'label': 'Exam\nPrep', 'route': '/profile/exam-checklist', 'color': AppColors.warning, 'isTab': false},
       {'icon': Icons.style_outlined, 'label': 'Flash\nCards', 'route': '/focus/flashcards', 'color': AppColors.accent, 'isTab': false},
-      {'icon': Icons.leaderboard_outlined, 'label': 'Leader\nBoard', 'route': '/gamification/leaderboard', 'color': AppColors.streak, 'isTab': false},
     ];
 
     return Column(

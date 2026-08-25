@@ -173,6 +173,7 @@ class Topic {
   final String chapterId;
   final String name;
   final String? description;
+  final String difficulty;
   final int displayOrder;
   final DateTime createdAt;
 
@@ -181,6 +182,7 @@ class Topic {
     required this.chapterId,
     required this.name,
     this.description,
+    this.difficulty = 'medium',
     this.displayOrder = 0,
     DateTime? createdAt,
   })  : id = id ?? _uuid.v4(),
@@ -192,6 +194,7 @@ class Topic {
       chapterId: json['chapter_id'],
       name: json['name'],
       description: json['description'],
+      difficulty: json['difficulty'] ?? 'medium',
       displayOrder: json['display_order'] ?? 0,
       createdAt: DateTime.parse(json['created_at']),
     );
@@ -202,6 +205,7 @@ class Topic {
         'chapter_id': chapterId,
         'name': name,
         'description': description,
+        'difficulty': difficulty,
         'display_order': displayOrder,
         'created_at': createdAt.toIso8601String(),
       };

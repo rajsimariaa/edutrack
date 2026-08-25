@@ -7,6 +7,7 @@ import 'services/supabase_service.dart';
 import 'services/reminder_service.dart';
 import 'theme/app_theme.dart';
 import 'router/app_router.dart';
+import 'providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,11 +58,22 @@ class EduTrackApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeNotifier = ref.watch(themeProvider);
 
     return MaterialApp.router(
       title: 'EduTrack',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: themeNotifier.themeMode,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(themeNotifier.fontSize),
+          ),
+          child: child!,
+        );
+      },
       routerConfig: router,
     );
   }

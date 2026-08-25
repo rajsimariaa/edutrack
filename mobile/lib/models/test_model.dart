@@ -145,6 +145,7 @@ class UserTestSubmission {
   final int? totalWrong;
   final int? totalUnattempted;
   final int? timeTakenMins;
+  final double? negativeMarksPerQuestion;
   final DateTime submittedAt;
 
   UserTestSubmission({
@@ -158,6 +159,7 @@ class UserTestSubmission {
     this.totalWrong,
     this.totalUnattempted,
     this.timeTakenMins,
+    this.negativeMarksPerQuestion,
     DateTime? submittedAt,
   })  : id = id ?? _uuid.v4(),
         submittedAt = submittedAt ?? DateTime.now();
@@ -174,6 +176,7 @@ class UserTestSubmission {
       totalWrong: json['total_wrong'],
       totalUnattempted: json['total_unattempted'],
       timeTakenMins: json['time_taken_mins'],
+      negativeMarksPerQuestion: (json['negative_marks_per_question'] as num?)?.toDouble(),
       submittedAt: DateTime.parse(json['submitted_at']),
     );
   }
@@ -189,6 +192,7 @@ class UserTestSubmission {
         'total_wrong': totalWrong,
         'total_unattempted': totalUnattempted,
         'time_taken_mins': timeTakenMins,
+        'negative_marks_per_question': negativeMarksPerQuestion,
         'submitted_at': submittedAt.toIso8601String(),
       };
 }

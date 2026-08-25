@@ -10,19 +10,25 @@ import '../features/home/home_screen.dart';
 import '../features/syllabus/syllabus_screen.dart';
 import '../features/syllabus/chapter_screen.dart';
 import '../features/syllabus/module_screen.dart';
+import '../features/syllabus/topic_detail_screen.dart';
+import '../features/syllabus/forum_screen.dart';
 import '../features/schedule/schedule_screen.dart';
 import '../features/tests/tests_screen.dart';
 import '../features/tests/test_detail_screen.dart';
+import '../features/tests/mock_exam_screen.dart';
 import '../features/focus/focus_screen.dart';
 import '../features/focus/notes_screen.dart';
 import '../features/gamification/gamification_screen.dart';
 import '../features/gamification/leaderboard_screen.dart';
 import '../features/resources/resources_screen.dart';
+import '../features/resources/formula_sheets_screen.dart';
+import '../features/resources/glossary_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/focus/habits_screen.dart';
 import '../features/focus/flashcards_screen.dart';
 import '../features/gamification/peer_rooms_screen.dart';
 import '../features/profile/analytics_screen.dart';
+import '../features/profile/exam_checklist_screen.dart';
 import '../features/settings/reminder_settings_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -94,6 +100,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/syllabus/topic/:topicId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>?;
+          return TopicDetailScreen(
+            topicId: state.pathParameters['topicId']!,
+            topicName: extras?['topicName'] as String?,
+            topicDescription: extras?['topicDescription'] as String?,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/syllabus/forum/:chapterId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) {
+          final extras = state.extra as String?;
+          return ForumScreen(
+            chapterId: state.pathParameters['chapterId']!,
+            chapterName: extras,
+          );
+        },
+      ),
+      GoRoute(
         path: '/tests/:testId',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => TestDetailScreen(
@@ -124,6 +153,28 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile/reminders',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ReminderSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/resources/formulas',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const FormulaSheetsScreen(),
+      ),
+      GoRoute(
+        path: '/resources/glossary',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const GlossaryScreen(),
+      ),
+      GoRoute(
+        path: '/tests/mock-exam/:testId',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => MockExamScreen(
+          testId: state.pathParameters['testId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/profile/exam-checklist',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const ExamChecklistScreen(),
       ),
     ],
   );

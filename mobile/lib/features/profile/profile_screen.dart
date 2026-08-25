@@ -346,9 +346,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            Icons.school_outlined,
+            'Exam Day Checklist',
+            () => context.push('/profile/exam-checklist'),
+          ),
+          const Divider(height: 1),
+          _buildMenuItem(
             Icons.notifications_outlined,
             'Study Reminders',
             () => context.push('/profile/reminders'),
+          ),
+          const Divider(height: 1),
+          _buildMenuItem(
+            Icons.settings_outlined,
+            'Settings',
+            () => context.push('/settings'),
           ),
           const Divider(height: 1),
           _buildMenuItem(

@@ -21,11 +21,13 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
   List<TestQuestion> _questions = [];
   int _currentQuestion = 0;
   Map<int, String> _answers = {};
+  Set<int> _markedForReview = {};
   bool _isLoading = true;
   bool _isSubmitted = false;
   int _remainingSeconds = 0;
   bool _timerActive = false;
   Timer? _timer;
+  static const double _negativeMarkingRate = 0.33;
 
   @override
   void initState() {
@@ -74,6 +76,20 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     setState(() => _answers[questionIndex] = option);
   }
 
+  void _toggleMarkForReview(int questionIndex) {
+    setState(() {
+      if (_markedForReview.contains(questionIndex)) {
+        _markedForReview.remove(questionIndex);
+      } else {
+        _markedForReview.add(questionIndex);
+      }
+    });
+  }
+
+  void _clearAnswer(int questionIndex) {
+    setState(() => _answers.remove(questionIndex));
+  }
+
   void _nextQuestion() {
     if (_currentQuestion < _questions.length - 1) {
       setState(() => _currentQuestion++);
@@ -86,14 +102,12 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     }
   }
 
-  Future<void> _submitTest() async {
-    final auth = ref.read(authProvider);
-    if (auth.user == null || _test == null) return;
-
+  Map<String, dynamic> _calculateScore() {
     int correct = 0;
     int wrong = 0;
     int unattempted = 0;
     double totalScore = 0;
+    double totalPenalty = 0;
 
     for (int i = 0; i < _questions.length; i++) {
       final q = _questions[i];
@@ -105,18 +119,36 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
         totalScore += q.marks;
       } else {
         wrong++;
+        totalPenalty += q.marks * _negativeMarkingRate;
       }
     }
+
+    return {
+      'correct': correct,
+      'wrong': wrong,
+      'unattempted': unattempted,
+      'totalScore': totalScore,
+      'totalPenalty': totalPenalty,
+      'netScore': totalScore - totalPenalty,
+    };
+  }
+
+  Future<void> _submitTest() async {
+    final auth = ref.read(authProvider);
+    if (auth.user == null || _test == null) return;
+
+    final scoreData = _calculateScore();
 
     final answersJson = <Map<String, dynamic>>[];
     for (int i = 0; i < _questions.length; i++) {
       if (_answers.containsKey(i)) {
+        final isCorrect = _answers[i] == _questions[i].correctOption;
         answersJson.add({
           'question_id': _questions[i].id,
           'selected_option': _answers[i],
-          'is_correct': _answers[i] == _questions[i].correctOption,
+          'is_correct': isCorrect,
           'marks_obtained':
-              _answers[i] == _questions[i].correctOption ? _questions[i].marks : 0.0,
+              isCorrect ? _questions[i].marks : -_questions[i].marks * _negativeMarkingRate,
         });
       }
     }
@@ -127,10 +159,11 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     await _testService.submitTest(
       userId: userId,
       testId: widget.testId,
-      score: totalScore,
-      totalCorrect: correct,
-      totalWrong: wrong,
-      totalUnattempted: unattempted,
+      score: scoreData['netScore'] as double,
+      totalCorrect: scoreData['correct'] as int,
+      totalWrong: scoreData['wrong'] as int,
+      totalUnattempted: scoreData['unattempted'] as int,
+      negativeMarksPerQuestion: _negativeMarkingRate,
       answers: answersJson,
     );
 
@@ -145,6 +178,29 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     } catch (_) {}
 
     setState(() => _isSubmitted = true);
+  }
+
+  Widget _buildRunningScore() {
+    final scoreData = _calculateScore();
+    final netScore = scoreData['netScore'] as double;
+    final penalty = scoreData['totalPenalty'] as double;
+    final totalMarks = _test?.totalMarks ?? 100;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        'Score: ${netScore.toStringAsFixed(0)}/${totalMarks.toStringAsFixed(0)}${penalty > 0 ? ' (-${penalty.toStringAsFixed(1)})' : ''}',
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          color: AppColors.primary,
+          fontSize: 12,
+        ),
+      ),
+    );
   }
 
   @override
@@ -187,7 +243,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
         actions: [
           if (_timerActive && _remainingSeconds > 0)
             Padding(
-              padding: const EdgeInsets.only(right: 16),
+              padding: const EdgeInsets.only(right: 12),
               child: Center(
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -206,6 +262,12 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                 ),
               ),
             ),
+          Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: Center(
+              child: _buildRunningScore(),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Center(
@@ -320,26 +382,79 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
           ),
           Padding(
             padding: const EdgeInsets.all(16),
-            child: Row(
+            child: Column(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _currentQuestion > 0 ? _previousQuestion : null,
-                    child: const Text('Previous'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: _currentQuestion < _questions.length - 1
-                        ? _nextQuestion
-                        : _submitTest,
-                    child: Text(
-                      _currentQuestion < _questions.length - 1
-                          ? 'Next'
-                          : 'Submit',
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _toggleMarkForReview(_currentQuestion),
+                        icon: Icon(
+                          _markedForReview.contains(_currentQuestion)
+                              ? Icons.star
+                              : Icons.star_border,
+                          color: _markedForReview.contains(_currentQuestion)
+                              ? AppColors.warning
+                              : AppColors.textSecondary,
+                          size: 20,
+                        ),
+                        label: Text(
+                          _markedForReview.contains(_currentQuestion)
+                              ? 'Unmark'
+                              : 'Review',
+                          style: TextStyle(
+                            color: _markedForReview.contains(_currentQuestion)
+                                ? AppColors.warning
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                          side: BorderSide(
+                            color: _markedForReview.contains(_currentQuestion)
+                                ? AppColors.warning
+                                : AppColors.border,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _clearAnswer(_currentQuestion),
+                        icon: const Icon(Icons.clear, size: 20),
+                        label: const Text('Clear'),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 48),
+                          foregroundColor: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: _currentQuestion > 0 ? _previousQuestion : null,
+                        child: const Text('Previous'),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: _currentQuestion < _questions.length - 1
+                            ? _nextQuestion
+                            : _submitTest,
+                        child: Text(
+                          _currentQuestion < _questions.length - 1
+                              ? 'Next'
+                              : 'Submit',
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -350,21 +465,15 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
   }
 
   Widget _buildResultScreen() {
-    int correct = 0;
-    int wrong = 0;
-    for (int i = 0; i < _questions.length; i++) {
-      if (_answers[i] == _questions[i].correctOption) {
-        correct++;
-      } else if (_answers[i] != null) {
-        wrong++;
-      }
-    }
-    final skipped = _questions.length - correct - wrong;
+    final scoreData = _calculateScore();
+    final correct = scoreData['correct'] as int;
+    final wrong = scoreData['wrong'] as int;
+    final skipped = scoreData['unattempted'] as int;
     final totalMarks = _questions.fold<double>(0, (sum, q) => sum + q.marks);
-    final obtained = _questions.asMap().entries.fold<double>(0, (sum, entry) {
-      return sum + (_answers[entry.key] == entry.value.correctOption ? entry.value.marks : 0);
-    });
-    final pct = totalMarks > 0 ? (obtained / totalMarks * 100) : 0.0;
+    final obtained = scoreData['totalScore'] as double;
+    final penalty = scoreData['totalPenalty'] as double;
+    final netScore = scoreData['netScore'] as double;
+    final pct = totalMarks > 0 ? (netScore / totalMarks * 100) : 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -407,8 +516,13 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '${obtained.toStringAsFixed(1)} / ${totalMarks.toStringAsFixed(0)} marks',
+                    'Net: ${netScore.toStringAsFixed(1)} / ${totalMarks.toStringAsFixed(0)} marks',
                     style: const TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Correct: +${obtained.toStringAsFixed(1)} | Wrong: -${penalty.toStringAsFixed(1)}',
+                    style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
               ),
@@ -420,6 +534,48 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                 _buildResultStat('Wrong', '$wrong', AppColors.error),
                 _buildResultStat('Skipped', '$skipped', AppColors.textHint),
               ],
+            ),
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.border),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Score Breakdown',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildBreakdownRow('Questions correct', '+${obtained.toStringAsFixed(1)}', AppColors.success),
+                  const SizedBox(height: 8),
+                  _buildBreakdownRow('Questions wrong', '-${penalty.toStringAsFixed(1)}', AppColors.error),
+                  const SizedBox(height: 8),
+                  _buildBreakdownRow('Questions unattempted', '0', AppColors.textHint),
+                  const Divider(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Net Score',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        netScore.toStringAsFixed(1),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: netScore >= totalMarks * 0.5 ? AppColors.success : AppColors.error,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 24),
             Row(
@@ -607,6 +763,26 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBreakdownRow(String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
+      ],
     );
   }
 }
