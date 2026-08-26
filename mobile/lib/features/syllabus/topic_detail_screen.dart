@@ -39,14 +39,17 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
       final progress = await SyllabusService().getUserProgress(auth.user!.id);
       final topicProgress = progress.where((p) => p.topicId == widget.topicId);
       if (topicProgress.isNotEmpty) {
+        if (!mounted) return;
         setState(() {
           _status = topicProgress.first.status;
           _isLoading = false;
         });
       } else {
+        if (!mounted) return;
         setState(() => _isLoading = false);
       }
     } catch (_) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -61,6 +64,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
         topicId: widget.topicId,
         status: status,
       );
+      if (!mounted) return;
       setState(() => _status = status);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

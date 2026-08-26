@@ -26,6 +26,7 @@ class _ReminderSettingsScreenState extends State<ReminderSettingsScreen> {
     final enabled = await _reminderService.isEnabled();
     final hour = await _reminderService.getReminderHour();
     final minute = await _reminderService.getReminderMinute();
+    if (!mounted) return;
     setState(() {
       _isEnabled = enabled;
       _hour = hour;

@@ -96,6 +96,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
         _quizQuestions = List.from(_allQuestions);
       }
 
+      if (!mounted) return;
       setState(() => _isLoading = false);
 
       if (!_hasCompletedToday && _quizQuestions.isNotEmpty) {
@@ -185,6 +186,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
       _completionMap['daily_quiz_$todayStr'] = true;
     } catch (_) {}
 
+    if (!mounted) return;
     setState(() => _isSubmitted = true);
   }
 

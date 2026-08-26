@@ -38,11 +38,13 @@ class _ModuleScreenState extends ConsumerState<ModuleScreen> {
         final chapters = await _syllabusService.getChapters(module.id);
         result.add(_ModuleWithChapters(module: module, chapters: chapters));
       }
+      if (!mounted) return;
       setState(() {
         _modulesWithChapters = result;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

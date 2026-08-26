@@ -43,6 +43,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
       for (final sub in _submissions) {
         counts[sub.testId] = (counts[sub.testId] ?? 0) + 1;
       }
+      if (!mounted) return;
       setState(() {
         _attemptCounts = counts;
         _isLoading = false;

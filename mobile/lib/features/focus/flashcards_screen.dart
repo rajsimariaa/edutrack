@@ -58,6 +58,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       );
       if (exam == null) return;
       final subjects = await _syllabusService.getSubjects(exam.id);
+      if (!mounted) return;
       setState(() => _subjects = subjects);
     } catch (_) {}
   }
@@ -99,6 +100,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
 
       cards.shuffle(Random());
 
+      if (!mounted) return;
       setState(() {
         _flashcards = cards;
         _currentIndex = 0;
@@ -106,6 +108,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
         _isLoading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

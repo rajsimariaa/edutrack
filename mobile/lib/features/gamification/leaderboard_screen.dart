@@ -34,8 +34,10 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         examCategory: auth.profile!.examCategory,
         boardType: _selectedTab,
       );
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

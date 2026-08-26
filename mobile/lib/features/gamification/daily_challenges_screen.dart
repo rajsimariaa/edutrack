@@ -57,8 +57,10 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
         _badgeAwarded = true;
       }
 
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

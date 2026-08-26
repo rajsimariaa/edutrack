@@ -30,8 +30,10 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
 
     try {
       _notes = await _focusService.getNotes(auth.user!.id);
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

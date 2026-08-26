@@ -106,7 +106,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
               radius: 40,
               backgroundColor: AppColors.primary.withOpacity(0.1),
               child: Text(
-                name[0].toUpperCase(),
+                name.isNotEmpty ? name[0].toUpperCase() : 'S',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,

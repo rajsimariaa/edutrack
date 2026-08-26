@@ -36,8 +36,10 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
           startDate: DateTime.now().subtract(const Duration(days: 7)),
         );
       }
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

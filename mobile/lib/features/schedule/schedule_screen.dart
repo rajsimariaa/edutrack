@@ -39,18 +39,22 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           schedule.id,
           date: _selectedDate,
         );
+        if (!mounted) return;
         setState(() {
           _activeSchedule = schedule;
           _todayItems = items;
         });
       } else {
+        if (!mounted) return;
         setState(() {
           _activeSchedule = null;
           _todayItems = [];
         });
       }
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

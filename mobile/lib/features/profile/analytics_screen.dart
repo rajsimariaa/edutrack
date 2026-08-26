@@ -108,9 +108,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
 
       for (final subject in subjects) {
         final progress = await SyllabusService().getSubjectProgress(userId, subject.id);
-        final total = progress['total']!.toInt();
-        final mastered = progress['mastered']!.toInt();
-        final inProgress = progress['inProgress']!.toInt();
+        final total = (progress['total'] ?? 0).toInt();
+        final mastered = (progress['mastered'] ?? 0).toInt();
+        final inProgress = (progress['inProgress'] ?? 0).toInt();
         totalTopics += total;
         masteredTopics += mastered;
 

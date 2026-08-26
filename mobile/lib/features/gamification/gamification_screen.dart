@@ -44,8 +44,10 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
         startDate: DateTime.now().subtract(const Duration(days: 365)),
       );
       _computeStreaks();
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

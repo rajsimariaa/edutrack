@@ -41,12 +41,14 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
         progressMap[p.topicId] = p;
       }
 
+      if (!mounted) return;
       setState(() {
         _topics = topics;
         _progress = progressMap;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }
@@ -60,6 +62,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
       topicId: topic.id,
       status: status,
     );
+    if (!mounted) return;
     _loadData();
   }
 

@@ -159,8 +159,10 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
         _pastPapers = await _resourceService.getPastPapers(exam.id);
         _youtubeLinks = await _resourceService.getYoutubeLinks(examId: exam.id);
       }
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

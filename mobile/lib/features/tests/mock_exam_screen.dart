@@ -49,6 +49,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
     try {
       _test = await _testService.getTest(widget.testId);
       _questions = await _testService.getTestQuestions(widget.testId);
+      if (!mounted) return;
       setState(() => _isLoading = false);
       if (_test != null && _test!.durationMins > 0) {
         _remainingSeconds = _test!.durationMins * 60;
@@ -266,6 +267,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
 
     await _saveMockExamResult(scoreData, timeTakenMins);
 
+    if (!mounted) return;
     setState(() => _isSubmitted = true);
 
     if (autoSubmitted && mounted) {

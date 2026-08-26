@@ -165,6 +165,7 @@ class _ExamChecklistScreenState extends ConsumerState<ExamChecklistScreen> {
         _examDate = DateTime.tryParse(examDateStr);
       }
     } catch (_) {}
+    if (!mounted) return;
     setState(() => _isLoading = false);
   }
 

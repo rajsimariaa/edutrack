@@ -32,6 +32,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
     try {
       final exam = await _syllabusService.getExamForCategory(auth.profile!.examCategory);
       if (exam == null) {
+        if (!mounted) return;
         setState(() => _isLoading = false);
         return;
       }
@@ -46,12 +47,14 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
         );
       }
 
+      if (!mounted) return;
       setState(() {
         _subjects = subjects;
         _progress = progress;
         _isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

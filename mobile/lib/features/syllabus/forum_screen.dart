@@ -170,7 +170,7 @@ class _ForumScreenState extends State<ForumScreen> {
                   radius: 18,
                   backgroundColor: AppColors.primary.withOpacity(0.1),
                   child: Text(
-                    post.authorName[0].toUpperCase(),
+                    post.authorName.isNotEmpty ? post.authorName[0].toUpperCase() : 'A',
                     style: const TextStyle(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w600,

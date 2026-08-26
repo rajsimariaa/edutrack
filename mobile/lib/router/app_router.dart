@@ -16,10 +16,12 @@ import '../features/schedule/schedule_screen.dart';
 import '../features/tests/tests_screen.dart';
 import '../features/tests/test_detail_screen.dart';
 import '../features/tests/mock_exam_screen.dart';
+import '../features/tests/daily_quiz_screen.dart';
 import '../features/focus/focus_screen.dart';
 import '../features/focus/notes_screen.dart';
 import '../features/gamification/gamification_screen.dart';
 import '../features/gamification/leaderboard_screen.dart';
+import '../features/gamification/daily_challenges_screen.dart';
 import '../features/resources/resources_screen.dart';
 import '../features/resources/formula_sheets_screen.dart';
 import '../features/resources/glossary_screen.dart';
@@ -181,6 +183,16 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/settings',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/gamification/challenges',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyChallengesScreen(),
+      ),
+      GoRoute(
+        path: '/tests/daily-quiz',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const DailyQuizScreen(),
       ),
     ],
   );

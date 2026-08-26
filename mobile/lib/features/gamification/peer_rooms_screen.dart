@@ -29,8 +29,10 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
     if (auth.user == null) return;
     try {
       _rooms = await _gamificationService.getPeerRooms(auth.user!.id);
+      if (!mounted) return;
       setState(() => _isLoading = false);
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
     }
   }

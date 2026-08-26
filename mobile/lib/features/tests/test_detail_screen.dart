@@ -45,6 +45,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
     try {
       _test = await _testService.getTest(widget.testId);
       _questions = await _testService.getTestQuestions(widget.testId);
+      if (!mounted) return;
       setState(() => _isLoading = false);
       if (_test != null && _test!.durationMins > 0) {
         _remainingSeconds = _test!.durationMins * 60;
@@ -177,6 +178,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       await BadgeService().evaluateAndAwardBadges(userId);
     } catch (_) {}
 
+    if (!mounted) return;
     setState(() => _isSubmitted = true);
   }
 
