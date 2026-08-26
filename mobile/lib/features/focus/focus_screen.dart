@@ -56,8 +56,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPreferences();
     _currentQuote = _motivationalQuotes[Random().nextInt(_motivationalQuotes.length)];
+    _loadPreferences();
   }
 
   @override
@@ -72,6 +72,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   Future<void> _loadPreferences() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      if (!mounted) return;
       setState(() {
         _defaultSessionMinutes = prefs.getInt('pomodoro_duration') ?? 25;
         _shortBreakMinutes = prefs.getInt('short_break') ?? 5;
@@ -93,34 +94,48 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
     } catch (_) {}
   }
 
-  Future<void> _startTimer() async {
-    final auth = ref.read(authProvider);
-    if (auth.user == null) return;
+  void _startLocalTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_remainingSeconds > 0) {
+        setState(() => _remainingSeconds--);
+      } else {
+        timer.cancel();
+        if (_isBreak) {
+          _completeBreak();
+        } else {
+          _completeSession();
+        }
+      }
+    });
+  }
 
-    try {
-      if (!_isBreak) {
+  Future<void> _startTimer() async {
+    if (_isRunning) return;
+
+    final auth = ref.read(authProvider);
+    if (auth.user == null) {
+      _startLocalTimer();
+      if (mounted) setState(() => _isRunning = true);
+      return;
+    }
+
+    if (!_isBreak) {
+      try {
         final session = await _focusService.startPomodoro(
           userId: auth.user!.id,
           durationMins: _totalSeconds ~/ 60,
         );
         _currentSessionId = session.id;
-      }
+      } catch (_) {}
+    }
 
-      setState(() => _isRunning = true);
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        setState(() {
-          if (_remainingSeconds > 0) {
-            _remainingSeconds--;
-          } else {
-            if (_isBreak) {
-              _completeBreak();
-            } else {
-              _completeSession();
-            }
-          }
-        });
-      });
-    } catch (_) {}
+    if (!mounted) return;
+    setState(() => _isRunning = true);
+    _startLocalTimer();
   }
 
   Future<void> _pauseTimer() async {
@@ -139,7 +154,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
       }
     }
     _currentSessionId = null;
-    setState(() => _isRunning = false);
+    if (mounted) setState(() => _isRunning = false);
   }
 
   Future<void> _stopTimer() async {
@@ -161,6 +176,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
       } catch (_) {}
       _currentSessionId = null;
     }
+    if (!mounted) return;
     setState(() {
       _isRunning = false;
       _isBreak = false;
@@ -170,7 +186,6 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   }
 
   void _completeSession() {
-    _timer?.cancel();
     final auth = ref.read(authProvider);
     final userId = auth.user?.id;
 
@@ -189,6 +204,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
       _currentSessionId = null;
     }
 
+    if (!mounted) return;
     setState(() {
       _isRunning = false;
       _currentSession++;
@@ -202,7 +218,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   }
 
   void _completeBreak() {
-    _timer?.cancel();
+    if (!mounted) return;
     setState(() {
       _isRunning = false;
       _isBreak = false;
@@ -303,9 +319,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
     });
   }
 
-  Future<bool> _onWillPop() async {
+  void _handleBackPress() {
     if (_isFocusModeFullscreen && _isRunning) {
-      final shouldExit = await showDialog<bool>(
+      showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Exit Focus Mode?'),
@@ -321,19 +337,24 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
             ),
           ],
         ),
-      );
-      if (shouldExit == true) {
-        _pauseTimer();
-        _exitFullscreenFocusMode();
-        setState(() {
-          _focusModeActive = false;
-          _isFocusModeFullscreen = false;
-        });
-        return true;
-      }
-      return false;
+      ).then((shouldExit) {
+        if (shouldExit == true && mounted) {
+          _pauseTimer();
+          _exitFullscreenFocusMode();
+          setState(() {
+            _focusModeActive = false;
+            _isFocusModeFullscreen = false;
+          });
+        }
+      });
+    } else {
+      _pauseTimer();
+      _exitFullscreenFocusMode();
+      setState(() {
+        _focusModeActive = false;
+        _isFocusModeFullscreen = false;
+      });
     }
-    return true;
   }
 
   String _formatTime(int seconds) {
@@ -352,9 +373,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
 
     return PopScope(
       canPop: true,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (!didPop) {
-          await _onWillPop();
+      onPopInvokedWithResult: (didPop, _) {
+        if (_isFocusModeFullscreen) {
+          _handleBackPress();
         }
       },
       child: Scaffold(
@@ -368,7 +389,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.warning.withOpacity(0.15),
+                      color: AppColors.warning.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
@@ -475,10 +496,8 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
   Widget _buildFocusModeUI(double progress) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (didPop, _) async {
-        if (!didPop) {
-          await _onWillPop();
-        }
+      onPopInvokedWithResult: (didPop, _) {
+        _handleBackPress();
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -492,13 +511,13 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
+                      color: Colors.white.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       'FOCUS MODE',
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
+                        color: Colors.white.withValues(alpha: 0.7),
                         fontSize: 12,
                         letterSpacing: 2,
                         fontWeight: FontWeight.w600,
@@ -510,7 +529,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                     radius: 120,
                     lineWidth: 12,
                     percent: progress.clamp(0.0, 1.0),
-                    backgroundColor: Colors.white.withOpacity(0.1),
+                    backgroundColor: Colors.white.withValues(alpha: 0.1),
                     progressColor: _isBreak ? AppColors.warning : AppColors.primaryLight,
                     center: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -526,7 +545,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                         Text(
                           _isBreak ? 'Break Time' : 'Focus',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.5),
+                            color: Colors.white.withValues(alpha: 0.5),
                             fontSize: 14,
                           ),
                         ),
@@ -538,7 +557,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                     _currentQuote,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 14,
                       fontStyle: FontStyle.italic,
                       height: 1.5,
@@ -554,7 +573,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                           width: 56,
                           height: 56,
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1),
+                            color: Colors.white.withValues(alpha: 0.1),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.stop_circle_outlined, color: AppColors.error, size: 32),
@@ -567,7 +586,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                           width: 72,
                           height: 72,
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -592,12 +611,12 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.05),
+                        color: Colors.white.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         'Double tap to exit focus mode',
-                        style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 12),
                       ),
                     ),
                   ),
@@ -605,7 +624,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                     const SizedBox(height: 24),
                     Text(
                       'Session $_currentSession of $_sessionCount',
-                      style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 12),
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
                     ),
                   ],
                 ],
@@ -654,7 +673,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
           _focusModeActive ? 'Focus Mode On' : 'Focus Mode Off',
           style: TextStyle(
             fontSize: 12,
-              color: _focusModeActive ? AppColors.primary : AppColors.textSecondaryOf(context),
+            color: _focusModeActive ? AppColors.primary : AppColors.textSecondaryOf(context),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -720,9 +739,9 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: AppColors.warning.withOpacity(0.1),
+          color: AppColors.warning.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+          border: Border.all(color: AppColors.warning.withValues(alpha: 0.3)),
         ),
         child: Text(
           label,
@@ -744,7 +763,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.primary),
