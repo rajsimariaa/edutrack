@@ -134,10 +134,10 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                             Expanded(
                               child: Text(
                                 widget.topicName ?? 'Topic',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.textPrimary,
+                                style: TextStyle(
+                                   fontSize: 20,
+                                   fontWeight: FontWeight.bold,
+                                   color: AppColors.textPrimaryOf(context),
                                 ),
                               ),
                             ),
@@ -149,7 +149,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                             widget.topicDescription!,
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppColors.textSecondary,
+                               color: AppColors.textSecondaryOf(context),
                               height: 1.5,
                             ),
                           ),
@@ -198,12 +198,12 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                     onTap: () => context.push('/focus/notes'),
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+                  Text(
                     'Update Status',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.textPrimary,
+                      color: AppColors.textPrimaryOf(context),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -211,6 +211,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                     children: [
                       Expanded(
                         child: _buildStatusButton(
+                          context,
                           'Not Started',
                           TopicStatus.notStarted,
                           AppColors.notStarted,
@@ -219,6 +220,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: _buildStatusButton(
+                          context,
                           'In Progress',
                           TopicStatus.inProgress,
                           AppColors.inProgress,
@@ -227,6 +229,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: _buildStatusButton(
+                          context,
                           'Mastered',
                           TopicStatus.mastered,
                           AppColors.mastered,
@@ -281,13 +284,13 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
                       subtitle,
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryOf(context),
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: AppColors.textHint),
+              Icon(Icons.chevron_right, color: AppColors.textHintOf(context)),
             ],
           ),
         ),
@@ -295,17 +298,17 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
     );
   }
 
-  Widget _buildStatusButton(String label, TopicStatus status, Color color) {
+  Widget _buildStatusButton(BuildContext context, String label, TopicStatus status, Color color) {
     final isSelected = _status == status;
     return GestureDetector(
       onTap: () => _updateStatus(status),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.15) : AppColors.surface,
+          color: isSelected ? color.withOpacity(0.15) : AppColors.surfaceOf(context),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected ? color : AppColors.border,
+            color: isSelected ? color : AppColors.borderOf(context),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -313,7 +316,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_unchecked,
-              color: isSelected ? color : AppColors.textHint,
+              color: isSelected ? color : AppColors.textHintOf(context),
               size: 20,
             ),
             const SizedBox(height: 4),
@@ -322,7 +325,7 @@ class _TopicDetailScreenState extends ConsumerState<TopicDetailScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? color : AppColors.textSecondary,
+                color: isSelected ? color : AppColors.textSecondaryOf(context),
               ),
             ),
           ],

@@ -295,7 +295,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 controller: _tabController,
                 isScrollable: true,
                 labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textSecondary,
+                unselectedLabelColor: AppColors.textSecondaryOf(context),
                 indicatorColor: AppColors.primary,
                 indicatorSize: TabBarIndicatorSize.label,
                 labelStyle: const TextStyle(
@@ -362,21 +362,21 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
+            Text(
               'No Analytics Yet',
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryOf(context),
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               'Start studying and taking tests to see your progress here.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 14,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryOf(context),
               ),
             ),
           ],
@@ -393,9 +393,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -406,10 +406,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
               const SizedBox(width: 8),
               Text(
                 title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimaryOf(context),
                 ),
               ),
             ],
@@ -589,7 +589,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.w500,
-                                color: isToday ? AppColors.primary : AppColors.textSecondary,
+                                color: isToday ? AppColors.primary : AppColors.textSecondaryOf(context),
                               ),
                             ),
                           ),
@@ -601,7 +601,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                                 ? AppColors.primary
                                 : day.focusMins > 0
                                     ? AppColors.primaryLight.withOpacity(0.6)
-                                    : AppColors.border,
+                                    : AppColors.borderOf(context),
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
@@ -611,7 +611,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                            color: isToday ? AppColors.primary : AppColors.textHint,
+                            color: isToday ? AppColors.primary : AppColors.textHintOf(context),
                           ),
                         ),
                       ],
@@ -657,7 +657,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                     Expanded(
                       child: Text(
                         subject.name,
-                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: AppColors.textPrimaryOf(context)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -676,7 +676,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         borderRadius: BorderRadius.circular(4),
                         child: LinearProgressIndicator(
                           value: progress.clamp(0.0, 1.0),
-                          backgroundColor: AppColors.border,
+                          backgroundColor: AppColors.borderOf(context),
                           valueColor: AlwaysStoppedAnimation<Color>(color),
                           minHeight: 8,
                         ),
@@ -685,7 +685,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                     const SizedBox(width: 8),
                     Text(
                       '${subject.mastered}/${subject.total}',
-                      style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                     ),
                   ],
                 ),
@@ -722,8 +722,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Score Distribution', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
-                        Text('${_avgScore.toStringAsFixed(1)}% avg', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimary)),
+                        Text('Score Distribution', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondaryOf(context))),
+                        Text('${_avgScore.toStringAsFixed(1)}% avg', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.textPrimaryOf(context))),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -731,7 +731,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                       borderRadius: BorderRadius.circular(6),
                       child: LinearProgressIndicator(
                         value: (_avgScore / 100).clamp(0.0, 1.0),
-                        backgroundColor: AppColors.border,
+                        backgroundColor: AppColors.borderOf(context),
                         valueColor: AlwaysStoppedAnimation<Color>(
                           _avgScore >= 70
                               ? AppColors.mastered
@@ -746,11 +746,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 ),
               ],
             )
-          : const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
               child: Text(
                 'No tests taken yet. Start a test to see your performance.',
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
               ),
             ),
     );
@@ -768,7 +768,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
           children: [
             Text(value, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+              Text(label, style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context))),
           ],
         ),
       ),
@@ -788,11 +788,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
             _buildSectionCard(
               title: 'Test Analytics',
               icon: Icons.analytics_outlined,
-              child: const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 child: Text(
                   'No tests taken yet. Start a test to see detailed analytics.',
-                  style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                  style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                 ),
               ),
             )
@@ -829,8 +829,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
 
   Widget _buildAccuracyTrendChart() {
     if (_submissionsWithScores.isEmpty) {
-      return const Center(
-        child: Text('No data available', style: TextStyle(color: AppColors.textSecondary)),
+      return Center(
+        child: Text('No data available', style: TextStyle(color: AppColors.textSecondaryOf(context))),
       );
     }
 
@@ -857,7 +857,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
             drawVerticalLine: false,
             horizontalInterval: 25,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: AppColors.border,
+              color: AppColors.borderOf(context),
               strokeWidth: 1,
             ),
           ),
@@ -873,7 +873,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 getTitlesWidget: (value, meta) {
                   return Text(
                     '${value.toInt()}%',
-                    style: const TextStyle(fontSize: 10, color: AppColors.textHint),
+                    style: TextStyle(fontSize: 10, color: AppColors.textHintOf(context)),
                   );
                 },
               ),
@@ -894,7 +894,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           '${date.day}/${date.month}',
-                          style: const TextStyle(fontSize: 9, color: AppColors.textHint),
+                          style: TextStyle(fontSize: 9, color: AppColors.textHintOf(context)),
                         ),
                       );
                     }
@@ -937,8 +937,8 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
 
   Widget _buildSubjectAccuracyBarChart() {
     if (_subjectWiseAccuracy.isEmpty) {
-      return const Center(
-        child: Text('No subject data available', style: TextStyle(color: AppColors.textSecondary)),
+      return Center(
+        child: Text('No subject data available', style: TextStyle(color: AppColors.textSecondaryOf(context))),
       );
     }
 
@@ -998,7 +998,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 getTitlesWidget: (value, meta) {
                   return Text(
                     '${value.toInt()}%',
-                    style: const TextStyle(fontSize: 10, color: AppColors.textHint),
+                    style: TextStyle(fontSize: 10, color: AppColors.textHintOf(context)),
                   );
                 },
               ),
@@ -1018,7 +1018,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         angle: -0.5,
                         child: Text(
                           shortName,
-                          style: const TextStyle(fontSize: 9, color: AppColors.textHint),
+                          style: TextStyle(fontSize: 9, color: AppColors.textHintOf(context)),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -1035,7 +1035,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
             drawVerticalLine: false,
             horizontalInterval: 25,
             getDrawingHorizontalLine: (value) => FlLine(
-              color: AppColors.border,
+              color: AppColors.borderOf(context),
               strokeWidth: 1,
             ),
           ),
@@ -1047,11 +1047,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
 
   Widget _buildChapterAccuracyList() {
     if (_topicWiseAccuracy.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           'No topic data available yet.',
-          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
         ),
       );
     }
@@ -1079,7 +1079,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                   Expanded(
                     child: Text(
                       name,
-                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
+                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textPrimaryOf(context)),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -1094,7 +1094,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 borderRadius: BorderRadius.circular(4),
                 child: LinearProgressIndicator(
                   value: accuracy / 100,
-                  backgroundColor: AppColors.border,
+                  backgroundColor: AppColors.borderOf(context),
                   valueColor: AlwaysStoppedAnimation<Color>(color),
                   minHeight: 6,
                 ),
@@ -1112,11 +1112,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
     final totalQuestions = _allTestAnswers.length;
 
     if (totalQuestions == 0) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 12),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
         child: Text(
           'No test data available to compute time.',
-          style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
         ),
       );
     }
@@ -1144,11 +1144,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
             children: [
               Text(
                 '$minutes min ${seconds}s',
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textPrimaryOf(context)),
               ),
-              const Text(
+              Text(
                 'Average time per question',
-                style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
               ),
             ],
           ),
@@ -1160,9 +1160,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
               '$totalQuestions',
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.primary),
             ),
-            const Text(
+            Text(
               'questions answered',
-              style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 11, color: AppColors.textSecondaryOf(context)),
             ),
           ],
         ),
@@ -1187,15 +1187,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 child: const Icon(Icons.warning_amber_outlined, size: 48, color: AppColors.warning),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'No Weak Areas Identified',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimaryOf(context)),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Take more tests to identify your weak areas.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
               ),
             ],
           ),
@@ -1223,15 +1223,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 child: const Icon(Icons.check_circle_outline, size: 48, color: AppColors.mastered),
               ),
               const SizedBox(height: 16),
-              const Text(
+              Text(
                 'Great Job!',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimaryOf(context)),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'No weak areas found. Your accuracy is above 70% across all topics.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
               ),
             ],
           ),
@@ -1259,7 +1259,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                 Expanded(
                   child: Text(
                     'Found ${weakTopics.length} weak topic${weakTopics.length > 1 ? 's' : ''} with accuracy below 70%.',
-                    style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context)),
                   ),
                 ),
               ],
@@ -1277,9 +1277,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.surfaceOf(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderOf(context)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1290,7 +1290,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                       Expanded(
                         child: Text(
                           name,
-                          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimary),
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.textPrimaryOf(context)),
                         ),
                       ),
                       Container(
@@ -1309,14 +1309,14 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                   const SizedBox(height: 8),
                   Text(
                     '$correct correct out of $total questions',
-                    style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                   ),
                   const SizedBox(height: 12),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: LinearProgressIndicator(
                       value: accuracy / 100,
-                      backgroundColor: AppColors.border,
+                      backgroundColor: AppColors.borderOf(context),
                       valueColor: AlwaysStoppedAnimation<Color>(color),
                       minHeight: 6,
                     ),
@@ -1367,7 +1367,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         radius: 60,
                         lineWidth: 10,
                         percent: (_predictedScore / 100).clamp(0.0, 1.0),
-                        backgroundColor: AppColors.border,
+                        backgroundColor: AppColors.borderOf(context),
                         progressColor: _predictedScore >= 70
                             ? AppColors.mastered
                             : _predictedScore >= 40
@@ -1378,15 +1378,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                           children: [
                             Text(
                               '${_predictedScore.toStringAsFixed(1)}%',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: AppColors.textPrimaryOf(context),
                               ),
                             ),
-                            const Text(
+                            Text(
                               'predicted',
-                              style: TextStyle(fontSize: 10, color: AppColors.textSecondary),
+                              style: TextStyle(fontSize: 10, color: AppColors.textSecondaryOf(context)),
                             ),
                           ],
                         ),
@@ -1421,7 +1421,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                             Expanded(
                               child: Text(
                                 _predictionMessage,
-                                style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                    style: TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context)),
                               ),
                             ),
                           ],
@@ -1437,11 +1437,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                       ),
                     ],
                   )
-                : const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       'Complete at least one test to see your predicted score.',
-                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                     ),
                   ),
           ),
@@ -1486,22 +1486,22 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'Estimated All India Rank',
-                        style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                        style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         'Based on your test performance relative to peers',
-                        style: TextStyle(fontSize: 11, color: AppColors.textHint),
+                        style: TextStyle(fontSize: 11, color: AppColors.textHintOf(context)),
                       ),
                     ],
                   )
-                : const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       'Complete at least one test to see rank prediction.',
-                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                     ),
                   ),
           ),
@@ -1534,12 +1534,12 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                           children: [
                             Text(
                               'You need ${(_targetScore - _currentTrajectory).toStringAsFixed(1)}% more to reach your target',
-                              style: const TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                              style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                             ),
                             const SizedBox(height: 8),
                             LinearProgressIndicator(
                               value: (_currentTrajectory / _targetScore).clamp(0.0, 1.0),
-                              backgroundColor: AppColors.border,
+                              backgroundColor: AppColors.borderOf(context),
                               valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
                               minHeight: 8,
                             ),
@@ -1547,11 +1547,11 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         ),
                     ],
                   )
-                : const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 12),
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
                     child: Text(
                       'Complete tests to see target comparison.',
-                      style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context)),
                     ),
                   ),
           ),
@@ -1566,15 +1566,15 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: AppColors.backgroundOf(context),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            Text(value, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textPrimaryOf(context))),
             const SizedBox(height: 2),
-            Text(label, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+            Text(label, style: TextStyle(fontSize: 11, color: AppColors.textSecondaryOf(context))),
           ],
         ),
       ),
@@ -1588,7 +1588,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(label, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondary)),
+            Text(label, style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: AppColors.textSecondaryOf(context))),
             Text('${value.toStringAsFixed(1)}%', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: color)),
           ],
         ),
@@ -1597,7 +1597,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
           borderRadius: BorderRadius.circular(6),
           child: LinearProgressIndicator(
             value: (value / 100).clamp(0.0, 1.0),
-            backgroundColor: AppColors.border,
+            backgroundColor: AppColors.borderOf(context),
             valueColor: AlwaysStoppedAnimation<Color>(color),
             minHeight: 10,
           ),
@@ -1656,16 +1656,16 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         children: [
                           Text(
                             '${(_studyConsistency * 100).toStringAsFixed(0)}%',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
-                              color: AppColors.textPrimary,
+                              color: AppColors.textPrimaryOf(context),
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             'Days studied this week',
-                            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                           ),
                         ],
                       ),
@@ -1678,7 +1678,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         children: [
                           CircularProgressIndicator(
                             value: _studyConsistency.clamp(0.0, 1.0),
-                            backgroundColor: AppColors.border,
+                            backgroundColor: AppColors.borderOf(context),
                             valueColor: AlwaysStoppedAnimation<Color>(
                               _studyConsistency >= 0.7
                                   ? AppColors.mastered
@@ -1691,10 +1691,10 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                           Center(
                             child: Text(
                               '${(_studyConsistency * 7).round()}/7',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.textPrimary,
+                                color: AppColors.textPrimaryOf(context),
                               ),
                             ),
                           ),
@@ -1769,9 +1769,9 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            Text(label, style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context))),
               const SizedBox(height: 4),
-              Text(displayValue, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+              Text(displayValue, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textPrimaryOf(context))),
             ],
           ),
         ),
@@ -1779,7 +1779,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: isSame
-                ? AppColors.textHint.withOpacity(0.1)
+                ? AppColors.textHintOf(context).withOpacity(0.1)
                 : isUp
                     ? AppColors.mastered.withOpacity(0.1)
                     : AppColors.notStarted.withOpacity(0.1),
@@ -1796,7 +1796,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         : Icons.arrow_downward,
                 size: 14,
                 color: isSame
-                    ? AppColors.textHint
+                    ? AppColors.textHintOf(context)
                     : isUp
                         ? AppColors.mastered
                         : AppColors.notStarted,
@@ -1808,7 +1808,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: isSame
-                      ? AppColors.textHint
+                      ? AppColors.textHintOf(context)
                       : isUp
                           ? AppColors.mastered
                           : AppColors.notStarted,
@@ -1844,7 +1844,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                         ? AppColors.mastered
                         : isToday
                             ? AppColors.primary.withOpacity(0.2)
-                            : AppColors.border,
+                            : AppColors.borderOf(context),
                     borderRadius: BorderRadius.circular(6),
                     border: isToday
                         ? Border.all(color: AppColors.primary, width: 1.5)
@@ -1860,7 +1860,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
                   style: TextStyle(
                     fontSize: 10,
                     fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-                    color: isToday ? AppColors.primary : AppColors.textHint,
+                    color: isToday ? AppColors.primary : AppColors.textHintOf(context),
                   ),
                 ),
               ],
@@ -1884,7 +1884,7 @@ class _AnalyticsScreenState extends ConsumerState<AnalyticsScreen>
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: Text(label, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          child: Text(label, style: TextStyle(fontSize: 13, color: AppColors.textSecondaryOf(context))),
         ),
         Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: color)),
       ],

@@ -238,7 +238,7 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
             ),
             subtitle: Text(
               '${paper['year'] ?? ""} ${paper['term'] ?? ""}',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
             ),
             trailing: IconButton(
               icon: const Icon(Icons.download),
@@ -257,17 +257,17 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
 
   Widget _buildYouTubeLinks() {
     if (_youtubeLinks.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(32),
+          padding: const EdgeInsets.all(32),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHint),
-              SizedBox(height: 16),
-              Text('No YouTube links yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-              SizedBox(height: 8),
-              Text('YouTube links will appear as they are added to chapters', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textHint)),
+              Icon(Icons.play_circle_outline, size: 64, color: AppColors.textHintOf(context)),
+              const SizedBox(height: 16),
+              Text('No YouTube links yet', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: AppColors.textSecondaryOf(context))),
+              const SizedBox(height: 8),
+              Text('YouTube links will appear as they are added to chapters', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textHintOf(context))),
             ],
           ),
         ),
@@ -292,13 +292,13 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
               child: const Icon(Icons.play_circle, color: AppColors.error),
             ),
             title: Text(link['title'] ?? 'Untitled', style: const TextStyle(fontWeight: FontWeight.w600)),
-            subtitle: Text(link['channel_name'] ?? '', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+            subtitle: Text(link['channel_name'] ?? '', style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context))),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.thumb_up, size: 16, color: AppColors.textHint),
+                Icon(Icons.thumb_up, size: 16, color: AppColors.textHintOf(context)),
                 const SizedBox(width: 4),
-                Text('${link['upvotes'] ?? 0}', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+                Text('${link['upvotes'] ?? 0}', style: TextStyle(fontSize: 12, color: AppColors.textHintOf(context))),
               ],
             ),
             onTap: () async {
@@ -348,8 +348,8 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
           child: const Icon(Icons.functions, color: AppColors.primary, size: 20),
         ),
         title: Text(subject, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14)),
-        subtitle: Text(count, style: TextStyle(fontSize: 12, color: AppColors.textHint)),
-        trailing: Icon(Icons.chevron_right, color: AppColors.textHint),
+        subtitle: Text(count, style: TextStyle(fontSize: 12, color: AppColors.textHintOf(context))),
+        trailing: Icon(Icons.chevron_right, color: AppColors.textHintOf(context)),
         onTap: () => context.push('/resources/formulas'),
       ),
     );
@@ -367,12 +367,12 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
           onTap: () => context.push('/resources/glossary'),
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Sample Terms',
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.textSecondary,
+            color: AppColors.textSecondaryOf(context),
           ),
         ),
         const SizedBox(height: 8),
@@ -403,14 +403,14 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
                   const SizedBox(height: 2),
                   Text(
                     definition,
-                    style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                    style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: AppColors.textHint, size: 18),
+            Icon(Icons.chevron_right, color: AppColors.textHintOf(context), size: 18),
           ],
         ),
       ),
@@ -475,10 +475,10 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
                 const SizedBox(height: 10),
                 Text(
                   item['title']!,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 15,
-                    color: AppColors.textPrimary,
+                    color: AppColors.textPrimaryOf(context),
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -486,7 +486,7 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
                   item['summary']!,
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryOf(context),
                     height: 1.4,
                   ),
                 ),
@@ -524,7 +524,7 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
             ),
             subtitle: Text(
               law['description'] as String,
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -533,17 +533,17 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
                 margin: const EdgeInsets.only(bottom: 6),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppColors.background,
+                  color: AppColors.backgroundOf(context),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.article_outlined, size: 16, color: AppColors.textHint),
+                    Icon(Icons.article_outlined, size: 16, color: AppColors.textHintOf(context)),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         section,
-                        style: const TextStyle(fontSize: 13, color: AppColors.textPrimary),
+                        style: TextStyle(fontSize: 13, color: AppColors.textPrimaryOf(context)),
                       ),
                     ),
                   ],
@@ -592,12 +592,12 @@ class _ResourcesScreenState extends ConsumerState<ResourcesScreen> {
                     const SizedBox(height: 2),
                     Text(
                       subtitle,
-                      style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                      style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right, color: AppColors.textHint),
+              Icon(Icons.chevron_right, color: AppColors.textHintOf(context)),
             ],
           ),
         ),

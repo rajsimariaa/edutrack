@@ -102,7 +102,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               _buildWelcomeCard(context, auth),
               if (_userExam?.nextExamDate != null) ...[
                 const SizedBox(height: 16),
-                _buildExamCountdown(),
+                _buildExamCountdown(context),
               ],
               const SizedBox(height: 16),
               _buildQuickStats(context),
@@ -189,7 +189,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return DateTime(year, exam.nextExamDate!.month, exam.nextExamDate!.day);
   }
 
-  Widget _buildExamCountdown() {
+  Widget _buildExamCountdown(BuildContext context) {
     final auth = ref.read(authProvider);
     final targetYear = auth.profile?.targetYear;
     final exam = _userExam!;
@@ -241,7 +241,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   '$dateStr (${examDate.year})',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryOf(context),
                   ),
                 ),
               ],
@@ -277,23 +277,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _buildQuickStats(BuildContext context) {
     return Row(
       children: [
-        _buildStatCard('Current Streak', '$_streakDays days', Icons.local_fire_department, AppColors.streak),
+        _buildStatCard(context, 'Current Streak', '$_streakDays days', Icons.local_fire_department, AppColors.streak),
         const SizedBox(width: 12),
-        _buildStatCard('Focus Hours', '${_focusHours.toStringAsFixed(1)}h', Icons.access_time, AppColors.primary),
+        _buildStatCard(context, 'Focus Hours', '${_focusHours.toStringAsFixed(1)}h', Icons.access_time, AppColors.primary),
         const SizedBox(width: 12),
-        _buildStatCard('Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
+        _buildStatCard(context, 'Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(BuildContext context, String label, String value, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surfaceOf(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderOf(context)),
         ),
         child: Column(
           children: [
@@ -312,7 +312,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryOf(context),
               ),
               textAlign: TextAlign.center,
             ),
@@ -345,16 +345,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surfaceOf(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderOf(context)),
           ),
           child: _todayItems.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   child: Text(
                     'No schedule items for today',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: AppColors.textSecondaryOf(context)),
                   ),
                 )
               : Column(
@@ -362,6 +362,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     for (int i = 0; i < _todayItems.length; i++) ...[
                       if (i > 0) const Divider(height: 24),
                       _buildScheduleItem(
+                        context,
                         _todayItems[i].title,
                         '${_todayItems[i].startTime ?? ''} - ${_todayItems[i].endTime ?? ''}',
                         _todayItems[i].status == ScheduleItemStatus.completed,
@@ -374,12 +375,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
-  Widget _buildScheduleItem(String title, String time, bool completed) {
+  Widget _buildScheduleItem(BuildContext context, String title, String time, bool completed) {
     return Row(
       children: [
         Icon(
           completed ? Icons.check_circle : Icons.radio_button_unchecked,
-          color: completed ? AppColors.success : AppColors.textHint,
+          color: completed ? AppColors.success : AppColors.textHintOf(context),
         ),
         const SizedBox(width: 12),
         Expanded(
@@ -391,14 +392,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 style: TextStyle(
                   fontWeight: FontWeight.w600,
                   decoration: completed ? TextDecoration.lineThrough : null,
-                  color: completed ? AppColors.textHint : AppColors.textPrimary,
+                  color: completed ? AppColors.textHintOf(context) : AppColors.textPrimaryOf(context),
                 ),
               ),
               Text(
                 time,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: AppColors.textSecondaryOf(context),
                 ),
               ),
             ],
@@ -488,16 +489,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surfaceOf(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderOf(context)),
             ),
-            child: const Row(
+            child: Row(
               children: [
-                Icon(Icons.info_outline, color: AppColors.textSecondary, size: 20),
-                SizedBox(width: 12),
+                Icon(Icons.info_outline, color: AppColors.textSecondaryOf(context), size: 20),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: Text('Complete tasks to see activity here', style: TextStyle(color: AppColors.textSecondary)),
+                  child: Text('Complete tasks to see activity here', style: TextStyle(color: AppColors.textSecondaryOf(context))),
                 ),
               ],
             ),
@@ -507,9 +508,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: AppColors.surfaceOf(context),
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+              border: Border.all(color: AppColors.borderOf(context)),
             ),
             child: Row(
               children: [
@@ -529,14 +530,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const Text('Focus Session', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                       Text(
                         '${session.durationMins} min • ${session.status}',
-                        style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                        style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                       ),
                     ],
                   ),
                 ),
                 Icon(
                   session.status == 'completed' ? Icons.check_circle : Icons.radio_button_unchecked,
-                  color: session.status == 'completed' ? AppColors.success : AppColors.textHint,
+                  color: session.status == 'completed' ? AppColors.success : AppColors.textHintOf(context),
                   size: 20,
                 ),
               ],

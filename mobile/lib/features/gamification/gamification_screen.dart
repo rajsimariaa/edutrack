@@ -148,9 +148,9 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surfaceOf(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderOf(context)),
           ),
           child: Column(
             children: [
@@ -187,7 +187,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
         ),
         Text(
           label,
-          style: TextStyle(fontSize: 11, color: AppColors.textSecondary),
+          style: TextStyle(fontSize: 11, color: AppColors.textSecondaryOf(context)),
         ),
       ],
     );
@@ -232,7 +232,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
   Color _heatmapColor(int intensity) {
     switch (intensity) {
       case 0:
-        return AppColors.border;
+        return AppColors.borderOf(context);
       case 1:
         return AppColors.primary.withOpacity(0.3);
       case 2:
@@ -240,7 +240,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
       case 3:
         return AppColors.primary;
       default:
-        return AppColors.border;
+        return AppColors.borderOf(context);
     }
   }
 
@@ -261,7 +261,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
               ? Center(
                   child: Text(
                     'Pin up to 3 badges to showcase',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: AppColors.textSecondaryOf(context)),
                   ),
                 )
               : ListView.builder(
@@ -316,20 +316,20 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
             decoration: BoxDecoration(
               color: isUnlocked
                   ? _rarityColor(badge.rarityTier).withOpacity(0.2)
-                  : AppColors.border,
+                  : AppColors.borderOf(context),
               shape: BoxShape.circle,
               border: Border.all(
                 color: isPinned
                     ? AppColors.badge
-                    : isUnlocked
-                        ? _rarityColor(badge.rarityTier)
-                        : AppColors.border,
+                        : isUnlocked
+                            ? _rarityColor(badge.rarityTier)
+                            : AppColors.borderOf(context),
                 width: isPinned ? 3 : 1,
               ),
             ),
             child: Icon(
               isUnlocked ? Icons.emoji_events : Icons.lock_outline,
-              color: isUnlocked ? _rarityColor(badge.rarityTier) : AppColors.textHint,
+              color: isUnlocked ? _rarityColor(badge.rarityTier) : AppColors.textHintOf(context),
             ),
           ),
           const SizedBox(height: 4),
@@ -338,7 +338,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w500,
-              color: isUnlocked ? AppColors.textPrimary : AppColors.textHint,
+              color: isUnlocked ? AppColors.textPrimaryOf(context) : AppColors.textHintOf(context),
             ),
           ),
         ],
@@ -417,7 +417,7 @@ class _GamificationScreenState extends ConsumerState<GamificationScreen> {
             Text(
               badge.description ?? '',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary),
+              style: TextStyle(color: AppColors.textSecondaryOf(context)),
             ),
             const SizedBox(height: 24),
             if (isUnlocked)

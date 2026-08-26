@@ -136,7 +136,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       case QuestionStatus.wrong:
         return AppColors.error;
       case QuestionStatus.unanswered:
-        return AppColors.textHint;
+        return AppColors.textHintOf(context);
       case QuestionStatus.markedForReview:
         return AppColors.warning;
       case QuestionStatus.answeredAndMarked:
@@ -386,7 +386,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
             children: [
               LinearProgressIndicator(
                 value: (_currentQuestion + 1) / _questions.length,
-                backgroundColor: AppColors.border,
+                backgroundColor: AppColors.borderOf(context),
                 valueColor: AlwaysStoppedAnimation(AppColors.primary),
               ),
               Expanded(
@@ -493,10 +493,10 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
             decoration: BoxDecoration(
               color: isSelected
                   ? AppColors.primary.withOpacity(0.1)
-                  : AppColors.surface,
+                  : AppColors.surfaceOf(context),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isSelected ? AppColors.primary : AppColors.border,
+                color: isSelected ? AppColors.primary : AppColors.borderOf(context),
                 width: isSelected ? 2 : 1,
               ),
             ),
@@ -506,7 +506,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: isSelected ? AppColors.primary : AppColors.border,
+                    color: isSelected ? AppColors.primary : AppColors.borderOf(context),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   alignment: Alignment.center,
@@ -514,7 +514,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                     key,
                     style: TextStyle(
                       fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : AppColors.textPrimary,
+                      color: isSelected ? Colors.white : AppColors.textPrimaryOf(context),
                     ),
                   ),
                 ),
@@ -523,7 +523,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                   child: Text(
                     text,
                     style: TextStyle(
-                      color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                      color: isSelected ? AppColors.primary : AppColors.textPrimaryOf(context),
                     ),
                   ),
                 ),
@@ -541,8 +541,8 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        color: AppColors.surfaceOf(context),
+        border: Border(top: BorderSide(color: AppColors.borderOf(context))),
       ),
       child: Column(
         children: [
@@ -557,7 +557,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                         : Icons.star_border,
                     color: _markedForReview.contains(_currentQuestion)
                         ? AppColors.warning
-                        : AppColors.textSecondary,
+                        : AppColors.textSecondaryOf(context),
                     size: 20,
                   ),
                   label: Text(
@@ -567,7 +567,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                     style: TextStyle(
                       color: _markedForReview.contains(_currentQuestion)
                           ? AppColors.warning
-                          : AppColors.textSecondary,
+                          : AppColors.textSecondaryOf(context),
                     ),
                   ),
                   style: OutlinedButton.styleFrom(
@@ -575,7 +575,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                     side: BorderSide(
                       color: _markedForReview.contains(_currentQuestion)
                           ? AppColors.warning
-                          : AppColors.border,
+                          : AppColors.borderOf(context),
                     ),
                   ),
                 ),
@@ -588,7 +588,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                   label: const Text('Clear'),
                   style: OutlinedButton.styleFrom(
                     minimumSize: const Size(0, 48),
-                    foregroundColor: AppColors.textSecondary,
+                    foregroundColor: AppColors.textSecondaryOf(context),
                   ),
                 ),
               ),
@@ -630,13 +630,13 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       bottom: 0,
       width: MediaQuery.of(context).size.width * 0.35,
       child: Container(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         child: Column(
           children: [
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: AppColors.border)),
+                border: Border(bottom: BorderSide(color: AppColors.borderOf(context))),
               ),
               child: const Text(
                 'Question Palette',
@@ -685,13 +685,13 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: AppColors.border)),
+                border: Border(top: BorderSide(color: AppColors.borderOf(context))),
               ),
               child: Column(
                 children: [
                   _buildLegend(AppColors.success, 'Answered'),
                   _buildLegend(AppColors.error, 'Wrong'),
-                  _buildLegend(AppColors.textHint, 'Unattempted'),
+                  _buildLegend(AppColors.textHintOf(context), 'Unattempted'),
                   _buildLegend(AppColors.warning, 'Marked'),
                 ],
               ),
@@ -805,16 +805,16 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
               children: [
                 _buildResultStat('Correct', '$correct', AppColors.success),
                 _buildResultStat('Wrong', '$wrong', AppColors.error),
-                _buildResultStat('Skipped', '$skipped', AppColors.textHint),
+                _buildResultStat('Skipped', '$skipped', AppColors.textHintOf(context)),
               ],
             ),
             const SizedBox(height: 12),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.surfaceOf(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderOf(context)),
               ),
               child: Row(
                 children: [
@@ -831,9 +831,9 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.surfaceOf(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderOf(context)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -847,7 +847,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                   const SizedBox(height: 8),
                   _buildBreakdownRow('Questions wrong', '-${penalty.toStringAsFixed(1)}', AppColors.error),
                   const SizedBox(height: 8),
-                  _buildBreakdownRow('Questions unattempted', '0', AppColors.textHint),
+                  _buildBreakdownRow('Questions unattempted', '0', AppColors.textHintOf(context)),
                   const Divider(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -874,9 +874,9 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.surfaceOf(context),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.border),
+                  border: Border.all(color: AppColors.borderOf(context)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -906,7 +906,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
                               width: 60,
                               child: LinearProgressIndicator(
                                 value: accuracy / 100,
-                                backgroundColor: AppColors.border,
+                                backgroundColor: AppColors.borderOf(context),
                                 valueColor: AlwaysStoppedAnimation(
                                   accuracy >= 50 ? AppColors.success : AppColors.error,
                                 ),
@@ -988,7 +988,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
             ),
             Text(
               label,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 12),
             ),
           ],
         ),
@@ -1002,7 +1002,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 14),
         ),
         Text(
           value,

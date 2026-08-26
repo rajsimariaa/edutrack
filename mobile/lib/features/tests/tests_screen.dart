@@ -126,7 +126,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
                           ),
                           Text(
                             '${test.totalMarks} marks • ${test.durationMins} min${attempts > 0 ? ' • Attempt $attempts' : ''}',
-                            style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                            style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
                           ),
                         ],
                       ),
@@ -197,7 +197,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
             ),
             subtitle: Text(
               'Correct: ${sub.totalCorrect ?? 0} • Wrong: ${sub.totalWrong ?? 0} • Skipped: ${sub.totalUnattempted ?? 0}',
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
             ),
           ),
         );
@@ -230,7 +230,7 @@ class _TestsScreenState extends ConsumerState<TestsScreen> {
             Text(
               'Test yourself with 10 random questions\nBuild your streak and earn bonus XP!',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+              style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 14),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(

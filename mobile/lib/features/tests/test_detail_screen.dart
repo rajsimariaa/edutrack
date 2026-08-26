@@ -283,7 +283,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
         children: [
           LinearProgressIndicator(
             value: (_currentQuestion + 1) / _questions.length,
-            backgroundColor: AppColors.border,
+            backgroundColor: AppColors.borderOf(context),
             valueColor: AlwaysStoppedAnimation(AppColors.primary),
           ),
           Expanded(
@@ -328,12 +328,12 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppColors.primary.withOpacity(0.1)
-                                : AppColors.surface,
+                                : AppColors.surfaceOf(context),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
                               color: isSelected
                                   ? AppColors.primary
-                                  : AppColors.border,
+                                  : AppColors.borderOf(context),
                               width: isSelected ? 2 : 1,
                             ),
                           ),
@@ -345,7 +345,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                                 decoration: BoxDecoration(
                                   color: isSelected
                                       ? AppColors.primary
-                                      : AppColors.border,
+                                      : AppColors.borderOf(context),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 alignment: Alignment.center,
@@ -355,7 +355,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                                     fontWeight: FontWeight.w600,
                                     color: isSelected
                                         ? Colors.white
-                                        : AppColors.textPrimary,
+                                        : AppColors.textPrimaryOf(context),
                                   ),
                                 ),
                               ),
@@ -366,7 +366,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                                   style: TextStyle(
                                     color: isSelected
                                         ? AppColors.primary
-                                        : AppColors.textPrimary,
+                                        : AppColors.textPrimaryOf(context),
                                   ),
                                 ),
                               ),
@@ -395,7 +395,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                               : Icons.star_border,
                           color: _markedForReview.contains(_currentQuestion)
                               ? AppColors.warning
-                              : AppColors.textSecondary,
+                              : AppColors.textSecondaryOf(context),
                           size: 20,
                         ),
                         label: Text(
@@ -405,7 +405,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                           style: TextStyle(
                             color: _markedForReview.contains(_currentQuestion)
                                 ? AppColors.warning
-                                : AppColors.textSecondary,
+                                : AppColors.textSecondaryOf(context),
                           ),
                         ),
                         style: OutlinedButton.styleFrom(
@@ -413,7 +413,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                           side: BorderSide(
                             color: _markedForReview.contains(_currentQuestion)
                                 ? AppColors.warning
-                                : AppColors.border,
+                                : AppColors.borderOf(context),
                           ),
                         ),
                       ),
@@ -426,7 +426,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                         label: const Text('Clear'),
                         style: OutlinedButton.styleFrom(
                           minimumSize: const Size(0, 48),
-                          foregroundColor: AppColors.textSecondary,
+                          foregroundColor: AppColors.textSecondaryOf(context),
                         ),
                       ),
                     ),
@@ -532,16 +532,16 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
               children: [
                 _buildResultStat('Correct', '$correct', AppColors.success),
                 _buildResultStat('Wrong', '$wrong', AppColors.error),
-                _buildResultStat('Skipped', '$skipped', AppColors.textHint),
+                _buildResultStat('Skipped', '$skipped', AppColors.textHintOf(context)),
               ],
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.surface,
+                color: AppColors.surfaceOf(context),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColors.border),
+                border: Border.all(color: AppColors.borderOf(context)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -555,7 +555,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                   const SizedBox(height: 8),
                   _buildBreakdownRow('Questions wrong', '-${penalty.toStringAsFixed(1)}', AppColors.error),
                   const SizedBox(height: 8),
-                  _buildBreakdownRow('Questions unattempted', '0', AppColors.textHint),
+                  _buildBreakdownRow('Questions unattempted', '0', AppColors.textHintOf(context)),
                   const Divider(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -587,7 +587,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                 ),
                 Text(
                   '${correct}/${_questions.length} correct',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondaryOf(context)),
                 ),
               ],
             ),
@@ -603,7 +603,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
+                  color: AppColors.surfaceOf(context),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isCorrect
@@ -656,7 +656,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                         padding: const EdgeInsets.only(left: 38),
                         child: Text(
                           'Skipped',
-                          style: TextStyle(color: AppColors.textHint, fontSize: 13),
+                          style: TextStyle(color: AppColors.textHintOf(context), fontSize: 13),
                         ),
                       ),
                     if (!isCorrect)
@@ -690,7 +690,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
                                   q.explanation!,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.textSecondary,
+                                    color: AppColors.textSecondaryOf(context),
                                   ),
                                 ),
                               ),
@@ -758,7 +758,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
             ),
             Text(
               label,
-              style: TextStyle(color: AppColors.textSecondary, fontSize: 12),
+              style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 12),
             ),
           ],
         ),
@@ -772,7 +772,7 @@ class _TestDetailScreenState extends ConsumerState<TestDetailScreen> {
       children: [
         Text(
           label,
-          style: TextStyle(color: AppColors.textSecondary, fontSize: 14),
+          style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 14),
         ),
         Text(
           value,

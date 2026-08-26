@@ -122,7 +122,7 @@ class _ChapterScreenState extends ConsumerState<ChapterScreen> {
                                   topic.description!,
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: AppColors.textSecondary,
+                                    color: AppColors.textSecondaryOf(context),
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,

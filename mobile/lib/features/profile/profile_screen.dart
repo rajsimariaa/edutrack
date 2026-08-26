@@ -71,7 +71,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildProfileHeader(auth),
+            _buildProfileHeader(context, auth),
             const SizedBox(height: 24),
             _buildStatsRow(auth),
             const SizedBox(height: 24),
@@ -82,7 +82,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildProfileHeader(AuthState auth) {
+  Widget _buildProfileHeader(BuildContext context, AuthState auth) {
     final name = auth.user?.userMetadata?['full_name'] ?? 'Student';
     final email = auth.user?.email ?? '';
     final completion = auth.profile?.profileCompletion ?? 0;
@@ -90,9 +90,9 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Column(
         children: [
@@ -100,7 +100,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             radius: 50,
             lineWidth: 6,
             percent: completion / 100,
-            backgroundColor: AppColors.border,
+            backgroundColor: AppColors.borderOf(context),
             progressColor: AppColors.primary,
             center: CircleAvatar(
               radius: 40,
@@ -126,7 +126,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           const SizedBox(height: 4),
           Text(
             email,
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: AppColors.textSecondaryOf(context)),
           ),
           const SizedBox(height: 8),
           Container(
@@ -152,23 +152,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildStatsRow(AuthState auth) {
     return Row(
       children: [
-        _buildStatCard('Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
+        _buildStatCard(context, 'Badges', '$_badgeCount', Icons.emoji_events, AppColors.badge),
         const SizedBox(width: 12),
-        _buildStatCard('Streak', '${_streakDays}d', Icons.local_fire_department, AppColors.streak),
+        _buildStatCard(context, 'Streak', '${_streakDays}d', Icons.local_fire_department, AppColors.streak),
         const SizedBox(width: 12),
-        _buildStatCard('Hours', '${_focusHours.toStringAsFixed(1)}', Icons.access_time, AppColors.primary),
+        _buildStatCard(context, 'Hours', '${_focusHours.toStringAsFixed(1)}', Icons.access_time, AppColors.primary),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+  Widget _buildStatCard(BuildContext context, String label, String value, IconData icon, Color color) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: AppColors.surfaceOf(context),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: AppColors.borderOf(context)),
         ),
         child: Column(
           children: [
@@ -184,7 +184,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
             ),
             Text(
               label,
-              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context)),
             ),
           ],
         ),
@@ -303,67 +303,77 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   Widget _buildMenuSection(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Column(
         children: [
           _buildMenuItem(
+            context,
             Icons.badge_outlined,
             'My Badges',
             () => context.go('/gamification'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.leaderboard_outlined,
             'Leaderboard',
             () => context.push('/gamification/leaderboard'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.analytics_outlined,
             'My Analytics',
             () => context.push('/profile/analytics'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.group_outlined,
             'Peer Rooms',
             () => context.go('/profile/peer-rooms'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.sticky_note_2_outlined,
             'My Notes',
             () => context.go('/focus/notes'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.history,
             'Test History',
             () => context.go('/tests'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.school_outlined,
             'Exam Day Checklist',
             () => context.push('/profile/exam-checklist'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.notifications_outlined,
             'Study Reminders',
             () => context.push('/profile/reminders'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.settings_outlined,
             'Settings',
             () => context.push('/settings'),
           ),
           const Divider(height: 1),
           _buildMenuItem(
+            context,
             Icons.logout,
             'Sign Out',
             () async {
@@ -377,22 +387,22 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String label, VoidCallback onTap,
+  Widget _buildMenuItem(BuildContext context, IconData icon, String label, VoidCallback onTap,
       {bool isDestructive = false}) {
     return ListTile(
       leading: Icon(
         icon,
-        color: isDestructive ? AppColors.error : AppColors.textSecondary,
+        color: isDestructive ? AppColors.error : AppColors.textSecondaryOf(context),
       ),
       title: Text(
         label,
         style: TextStyle(
-          color: isDestructive ? AppColors.error : AppColors.textPrimary,
+          color: isDestructive ? AppColors.error : AppColors.textPrimaryOf(context),
         ),
       ),
       trailing: Icon(
         Icons.chevron_right,
-        color: AppColors.textHint,
+        color: AppColors.textHintOf(context),
       ),
       onTap: onTap,
     );

@@ -229,7 +229,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
           const SizedBox(height: 8),
           Text(
             'Today\'s Score: $_todayScore%',
-            style: TextStyle(fontSize: 18, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 18, color: AppColors.textSecondaryOf(context)),
           ),
           const SizedBox(height: 16),
           _buildStreakCard(),
@@ -260,7 +260,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
         _buildStreakCard(),
         LinearProgressIndicator(
           value: (_currentQuestion + 1) / _quizQuestions.length,
-          backgroundColor: AppColors.border,
+          backgroundColor: AppColors.borderOf(context),
           valueColor: AlwaysStoppedAnimation(AppColors.primary),
         ),
         Expanded(
@@ -323,10 +323,10 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppColors.primary.withOpacity(0.1)
-                              : AppColors.surface,
+                              : AppColors.surfaceOf(context),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
-                            color: isSelected ? AppColors.primary : AppColors.border,
+                            color: isSelected ? AppColors.primary : AppColors.borderOf(context),
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -336,7 +336,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
                               width: 32,
                               height: 32,
                               decoration: BoxDecoration(
-                                color: isSelected ? AppColors.primary : AppColors.border,
+                                color: isSelected ? AppColors.primary : AppColors.borderOf(context),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               alignment: Alignment.center,
@@ -344,7 +344,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
                                 key,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
-                                  color: isSelected ? Colors.white : AppColors.textPrimary,
+                                  color: isSelected ? Colors.white : AppColors.textPrimaryOf(context),
                                 ),
                               ),
                             ),
@@ -353,7 +353,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
                               child: Text(
                                 text,
                                 style: TextStyle(
-                                  color: isSelected ? AppColors.primary : AppColors.textPrimary,
+                                  color: isSelected ? AppColors.primary : AppColors.textPrimaryOf(context),
                                 ),
                               ),
                             ),
@@ -563,9 +563,9 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.surface,
+            color: AppColors.surfaceOf(context),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderOf(context)),
           ),
           child: GridView.builder(
             shrinkWrap: true,
@@ -580,7 +580,7 @@ class _DailyQuizScreenState extends ConsumerState<DailyQuizScreen> {
               final completed = _completionMap['daily_quiz_${days[index]}'] == true;
               return Container(
                 decoration: BoxDecoration(
-                  color: completed ? AppColors.success : AppColors.border,
+                  color: completed ? AppColors.success : AppColors.borderOf(context),
                   borderRadius: BorderRadius.circular(3),
                 ),
               );

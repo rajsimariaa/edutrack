@@ -179,7 +179,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                   const SizedBox(height: 4),
                   Text(
                     'Complete all 3 to earn a bonus badge',
-                    style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                    style: TextStyle(color: AppColors.textSecondaryOf(context), fontSize: 13),
                   ),
                   const SizedBox(height: 20),
                   _buildChallengeCard(
@@ -227,10 +227,10 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
         decoration: BoxDecoration(
           color: isCompleted
               ? AppColors.success.withOpacity(0.05)
-              : AppColors.surface,
+              : AppColors.surfaceOf(context),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isCompleted ? AppColors.success : AppColors.border,
+                color: isCompleted ? AppColors.success : AppColors.borderOf(context),
             width: isCompleted ? 2 : 1,
           ),
         ),
@@ -245,7 +245,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                   CircularProgressIndicator(
                     value: isCompleted ? 1.0 : 0.0,
                     strokeWidth: 3,
-                    backgroundColor: AppColors.border,
+                    backgroundColor: AppColors.borderOf(context),
                     valueColor: AlwaysStoppedAnimation(
                       isCompleted ? AppColors.success : AppColors.primary,
                     ),
@@ -269,7 +269,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                       fontWeight: FontWeight.w600,
                       fontSize: 15,
                       decoration: isCompleted ? TextDecoration.lineThrough : null,
-                      color: isCompleted ? AppColors.textSecondary : AppColors.textPrimary,
+                      color: isCompleted ? AppColors.textSecondaryOf(context) : AppColors.textPrimaryOf(context),
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -277,7 +277,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                     subtitle,
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textHint,
+                      color: AppColors.textHintOf(context),
                     ),
                   ),
                 ],
@@ -287,12 +287,12 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: isCompleted ? AppColors.success : AppColors.border,
+            color: isCompleted ? AppColors.success : AppColors.borderOf(context),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isCompleted ? Icons.check : Icons.radio_button_unchecked,
-                color: isCompleted ? Colors.white : AppColors.textHint,
+                color: isCompleted ? Colors.white : AppColors.textHintOf(context),
                 size: 16,
               ),
             ),
@@ -323,7 +323,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                   child: CircularProgressIndicator(
                     value: progress,
                     strokeWidth: 10,
-                    backgroundColor: AppColors.border,
+                    backgroundColor: AppColors.borderOf(context),
                     valueColor: AlwaysStoppedAnimation(
                       _allCompletedToday ? AppColors.success : AppColors.primary,
                     ),
@@ -344,7 +344,7 @@ class _DailyChallengesScreenState extends ConsumerState<DailyChallengesScreen> {
                       'completed',
                       style: TextStyle(
                         fontSize: 12,
-                        color: AppColors.textSecondary,
+                        color: AppColors.textSecondaryOf(context),
                       ),
                     ),
                   ],

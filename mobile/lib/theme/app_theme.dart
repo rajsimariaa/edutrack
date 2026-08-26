@@ -39,6 +39,29 @@ class AppColors {
   static const darkTextHint = Color(0xFF808080);
   static const darkBorder = Color(0xFF333333);
   static const darkDivider = Color(0xFF2A2A2A);
+
+  static bool _isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
+
+  static Color backgroundOf(BuildContext context) => _isDark(context) ? darkBackground : background;
+  static Color surfaceOf(BuildContext context) => _isDark(context) ? darkSurface : surface;
+  static Color cardOf(BuildContext context) => _isDark(context) ? darkCard : card;
+  static Color textPrimaryOf(BuildContext context) => _isDark(context) ? darkTextPrimary : textPrimary;
+  static Color textSecondaryOf(BuildContext context) => _isDark(context) ? darkTextSecondary : textSecondary;
+  static Color textHintOf(BuildContext context) => _isDark(context) ? darkTextHint : textHint;
+  static Color borderOf(BuildContext context) => _isDark(context) ? darkBorder : border;
+  static Color dividerOf(BuildContext context) => _isDark(context) ? darkDivider : divider;
+}
+
+extension AppColorsExt on BuildContext {
+  Color get surface => AppColors.surfaceOf(this);
+  Color get card => AppColors.cardOf(this);
+  Color get bg => AppColors.backgroundOf(this);
+  Color get textPrimary => AppColors.textPrimaryOf(this);
+  Color get textSecondary => AppColors.textSecondaryOf(this);
+  Color get textHint => AppColors.textHintOf(this);
+  Color get border => AppColors.borderOf(this);
+  Color get divider => AppColors.dividerOf(this);
 }
 
 class AppTheme {

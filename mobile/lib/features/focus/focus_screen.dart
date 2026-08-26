@@ -402,7 +402,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                   radius: 120,
                   lineWidth: 12,
                   percent: progress.clamp(0.0, 1.0),
-                  backgroundColor: AppColors.border,
+                  backgroundColor: AppColors.borderOf(context),
                   progressColor: _isBreak ? AppColors.warning : AppColors.primary,
                   center: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -421,7 +421,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                                 ? 'Focus Time'
                                 : 'Ready to Focus',
                         style: TextStyle(
-                          color: AppColors.textSecondary,
+                          color: AppColors.textSecondaryOf(context),
                           fontSize: 14,
                         ),
                       ),
@@ -633,7 +633,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
                 ? AppColors.success
                 : isCurrent
                     ? AppColors.primary
-                    : AppColors.border,
+                    : AppColors.borderOf(context),
           ),
         );
       }),
@@ -647,14 +647,14 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
         Icon(
           _focusModeActive ? Icons.fullscreen : Icons.fullscreen_exit,
           size: 16,
-          color: _focusModeActive ? AppColors.primary : AppColors.textHint,
+          color: _focusModeActive ? AppColors.primary : AppColors.textHintOf(context),
         ),
         const SizedBox(width: 8),
         Text(
           _focusModeActive ? 'Focus Mode On' : 'Focus Mode Off',
           style: TextStyle(
             fontSize: 12,
-            color: _focusModeActive ? AppColors.primary : AppColors.textSecondary,
+              color: _focusModeActive ? AppColors.primary : AppColors.textSecondaryOf(context),
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -754,7 +754,7 @@ class _FocusScreenState extends ConsumerState<FocusScreen> {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondaryOf(context),
             ),
           ),
         ],

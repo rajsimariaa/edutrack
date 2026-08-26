@@ -218,22 +218,22 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(16, 24, 16, 8),
           child: Text(
             'Select a subject',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryOf(context),
             ),
           ),
         ),
-        const Padding(
+        Padding(
           padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
           child: Text(
             'Choose a subject to start reviewing flashcards',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: AppColors.textSecondaryOf(context)),
           ),
         ),
         Expanded(
@@ -262,17 +262,17 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
                     subject.name,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  subtitle: const Text(
+                  subtitle: Text(
                     'Tap to study',
                     style: TextStyle(
                       fontSize: 12,
-                      color: AppColors.textHint,
+                    color: AppColors.textHintOf(context),
                     ),
                   ),
-                  trailing: const Icon(
+                  trailing: Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
-                    color: AppColors.textHint,
+                    color: AppColors.textHintOf(context),
                   ),
                   onTap: () => _loadFlashcards(subject),
                 ),
@@ -292,23 +292,23 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
           Icon(
             Icons.style_outlined,
             size: 80,
-            color: AppColors.textHint.withOpacity(0.5),
+            color: AppColors.textHintOf(context).withOpacity(0.5),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'No flashcards available',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
+              color: AppColors.textPrimaryOf(context),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'This subject has no topics yet.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: AppColors.textSecondary,
+              color: AppColors.textSecondaryOf(context),
               fontSize: 14,
             ),
           ),
@@ -343,9 +343,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
             children: [
               Text(
                 '${_currentIndex + 1} of ${_flashcards.length}',
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: AppColors.textSecondaryOf(context),
                 ),
               ),
               const SizedBox(width: 8),
@@ -359,10 +359,10 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
               const Spacer(),
               Text(
                 '${(progress * 100).toInt()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.textSecondary,
+                  color: AppColors.textSecondaryOf(context),
                 ),
               ),
             ],
@@ -375,7 +375,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
             borderRadius: BorderRadius.circular(4),
             child: LinearProgressIndicator(
               value: progress,
-              backgroundColor: AppColors.border,
+              backgroundColor: AppColors.borderOf(context),
               valueColor: AlwaysStoppedAnimation<Color>(
                 progress < 0.33
                     ? AppColors.notStarted
@@ -578,9 +578,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
       width: double.infinity,
       constraints: const BoxConstraints(minHeight: 220),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border, width: 1.5),
+        border: Border.all(color: AppColors.borderOf(context), width: 1.5),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.06),
@@ -611,9 +611,9 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
               Text(
                 card.back,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: 16,
+            style: TextStyle(
+              color: AppColors.textPrimaryOf(context),
+              fontSize: 16,
                   fontWeight: FontWeight.w500,
                   height: 1.5,
                 ),
@@ -641,13 +641,13 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
             height: 48,
             decoration: BoxDecoration(
               color: isDisabled
-                  ? AppColors.border.withOpacity(0.5)
+                  ? AppColors.borderOf(context).withOpacity(0.5)
                   : color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               icon,
-              color: isDisabled ? AppColors.textHint : color,
+              color: isDisabled ? AppColors.textHintOf(context) : color,
               size: 22,
             ),
           ),
@@ -656,7 +656,7 @@ class _FlashcardsScreenState extends ConsumerState<FlashcardsScreen>
             label,
             style: TextStyle(
               fontSize: 11,
-              color: isDisabled ? AppColors.textHint : color,
+              color: isDisabled ? AppColors.textHintOf(context) : color,
               fontWeight: FontWeight.w500,
             ),
           ),

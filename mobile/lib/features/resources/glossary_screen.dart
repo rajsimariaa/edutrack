@@ -128,7 +128,7 @@ class _GlossaryScreenState extends State<GlossaryScreen> {
               decoration: InputDecoration(
                 hintText: 'Search terms...',
                 prefixIcon: const Icon(Icons.search, size: 20),
-                hintStyle: TextStyle(color: AppColors.textHint),
+                hintStyle: TextStyle(color: AppColors.textHintOf(context)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
@@ -138,7 +138,7 @@ class _GlossaryScreenState extends State<GlossaryScreen> {
                 ? Center(
                     child: Text(
                       'No terms found',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: AppColors.textSecondaryOf(context)),
                     ),
                   )
                 : ListView.builder(
@@ -182,10 +182,10 @@ class _GlossaryScreenState extends State<GlossaryScreen> {
           children: [
             Text(
               term['term']!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
-                color: AppColors.textPrimary,
+                color: AppColors.textPrimaryOf(context),
               ),
             ),
             const SizedBox(height: 4),
@@ -193,7 +193,7 @@ class _GlossaryScreenState extends State<GlossaryScreen> {
               term['definition']!,
               style: TextStyle(
                 fontSize: 13,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryOf(context),
                 height: 1.4,
               ),
             ),

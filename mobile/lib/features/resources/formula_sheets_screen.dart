@@ -120,7 +120,7 @@ class _FormulaSheetsScreenState extends State<FormulaSheetsScreen> {
               decoration: InputDecoration(
                 hintText: 'Search formulas...',
                 prefixIcon: const Icon(Icons.search, size: 20),
-                hintStyle: TextStyle(color: AppColors.textHint),
+                hintStyle: TextStyle(color: AppColors.textHintOf(context)),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
@@ -130,7 +130,7 @@ class _FormulaSheetsScreenState extends State<FormulaSheetsScreen> {
                 ? Center(
                     child: Text(
                       'No formulas found',
-                      style: TextStyle(color: AppColors.textSecondary),
+                      style: TextStyle(color: AppColors.textSecondaryOf(context)),
                     ),
                   )
                 : ListView.builder(
@@ -190,7 +190,7 @@ class _FormulaSheetsScreenState extends State<FormulaSheetsScreen> {
           margin: const EdgeInsets.only(bottom: 8),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: AppColors.background,
+            color: AppColors.backgroundOf(context),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
@@ -198,10 +198,10 @@ class _FormulaSheetsScreenState extends State<FormulaSheetsScreen> {
             children: [
               Text(
                 f['name'],
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 13,
-                  color: AppColors.textPrimary,
+                  color: AppColors.textPrimaryOf(context),
                 ),
               ),
               const SizedBox(height: 4),

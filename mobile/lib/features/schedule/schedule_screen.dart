@@ -154,9 +154,9 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -174,7 +174,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                   DateFormat('E').format(day),
                   style: TextStyle(
                     fontSize: 11,
-                    color: AppColors.textSecondary,
+                    color: AppColors.textSecondaryOf(context),
                     fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -203,7 +203,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
                             ? Colors.white
                             : isToday
                                 ? AppColors.primary
-                                : AppColors.textPrimary,
+                                : AppColors.textPrimaryOf(context),
                       ),
                     ),
                   ),
@@ -269,20 +269,20 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
     return Container(
       padding: const EdgeInsets.all(40),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.borderOf(context)),
       ),
       child: Center(
         child: Column(
           children: [
-            Icon(Icons.event_available, size: 48, color: AppColors.textHint),
+            Icon(Icons.event_available, size: 48, color: AppColors.textHintOf(context)),
             const SizedBox(height: 12),
             Text(
               'No tasks for this day',
               style: TextStyle(
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: AppColors.textSecondaryOf(context),
               ),
             ),
             const SizedBox(height: 8),
@@ -290,7 +290,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
               _activeSchedule == null
                   ? 'Create a schedule to get started'
                   : 'Tap + to add a task',
-              style: TextStyle(color: AppColors.textHint),
+              style: TextStyle(color: AppColors.textHintOf(context)),
             ),
           ],
         ),
@@ -331,12 +331,12 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             decoration: BoxDecoration(
               color: isCompleted
                   ? AppColors.success.withOpacity(0.1)
-                  : AppColors.border,
+                  : AppColors.borderOf(context),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               isCompleted ? Icons.check : Icons.radio_button_unchecked,
-              color: isCompleted ? AppColors.success : AppColors.textHint,
+              color: isCompleted ? AppColors.success : AppColors.textHintOf(context),
             ),
           ),
         ),
@@ -345,14 +345,14 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             decoration: isCompleted ? TextDecoration.lineThrough : null,
-            color: isCompleted ? AppColors.textHint : AppColors.textPrimary,
+            color: isCompleted ? AppColors.textHintOf(context) : AppColors.textPrimaryOf(context),
           ),
         ),
         subtitle: Text(
           '${item.startTime ?? ""} ${item.endTime != null ? "- ${item.endTime}" : ""}',
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            color: AppColors.textSecondaryOf(context),
           ),
         ),
         trailing: PopupMenuButton<String>(
@@ -564,7 +564,7 @@ class _ScheduleScreenState extends ConsumerState<ScheduleScreen> {
             children: [
               const Text('Reschedule Task', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              Text(item.title, style: TextStyle(color: AppColors.textSecondary)),
+              Text(item.title, style: TextStyle(color: AppColors.textSecondaryOf(context))),
               const SizedBox(height: 16),
               ListTile(
                 contentPadding: EdgeInsets.zero,

@@ -111,7 +111,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
                                     borderRadius: BorderRadius.circular(4),
                                     child: LinearProgressIndicator(
                                       value: pct,
-                                      backgroundColor: AppColors.border,
+                                      backgroundColor: AppColors.borderOf(context),
                                       valueColor: AlwaysStoppedAnimation(
                                         pct >= 1.0
                                             ? AppColors.mastered
@@ -124,7 +124,7 @@ class _SyllabusScreenState extends ConsumerState<SyllabusScreen> {
                                     '${(pct * 100).toInt()}% mastered',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: AppColors.textSecondary,
+                                      color: AppColors.textSecondaryOf(context),
                                     ),
                                   ),
                                 ],

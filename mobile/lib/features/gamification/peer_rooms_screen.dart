@@ -87,11 +87,11 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.group_outlined, size: 64, color: AppColors.textHint),
+          Icon(Icons.group_outlined, size: 64, color: AppColors.textHintOf(context)),
           const SizedBox(height: 16),
-          Text('No peer rooms yet', style: TextStyle(fontSize: 18, color: AppColors.textSecondary)),
+          Text('No peer rooms yet', style: TextStyle(fontSize: 18, color: AppColors.textSecondaryOf(context))),
           const SizedBox(height: 8),
-          Text('Create or join a room to compete with peers', style: TextStyle(color: AppColors.textHint)),
+          Text('Create or join a room to compete with peers', style: TextStyle(color: AppColors.textHintOf(context))),
         ],
       ),
     );
@@ -115,11 +115,11 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 4),
-            Text('Code: ${room.code}', style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
-            Text('${room.examCategory} | Max ${room.maxMembers}', style: TextStyle(fontSize: 12, color: AppColors.textHint)),
+            Text('Code: ${room.code}', style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context))),
+            Text('${room.examCategory} | Max ${room.maxMembers}', style: TextStyle(fontSize: 12, color: AppColors.textHintOf(context))),
           ],
         ),
-        trailing: Icon(Icons.chevron_right, color: AppColors.textHint),
+        trailing: Icon(Icons.chevron_right, color: AppColors.textHintOf(context)),
         onTap: () => _showRoomDetail(room),
       ),
     );
@@ -149,7 +149,7 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
                   Center(
                     child: Container(
                       width: 40, height: 4,
-                      decoration: BoxDecoration(color: AppColors.border, borderRadius: BorderRadius.circular(2)),
+                      decoration: BoxDecoration(color: AppColors.borderOf(context), borderRadius: BorderRadius.circular(2)),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -161,7 +161,7 @@ class _PeerRoomsScreenState extends ConsumerState<PeerRoomsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(room.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                            Text('Code: ${room.code}', style: TextStyle(color: AppColors.textSecondary)),
+                            Text('Code: ${room.code}', style: TextStyle(color: AppColors.textSecondaryOf(context))),
                           ],
                         ),
                       ),

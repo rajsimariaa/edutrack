@@ -30,6 +30,7 @@ import '../features/gamification/peer_rooms_screen.dart';
 import '../features/profile/analytics_screen.dart';
 import '../features/profile/exam_checklist_screen.dart';
 import '../features/settings/reminder_settings_screen.dart';
+import '../features/settings/settings_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();
@@ -175,6 +176,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/profile/exam-checklist',
         parentNavigatorKey: _rootNavigatorKey,
         builder: (context, state) => const ExamChecklistScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        parentNavigatorKey: _rootNavigatorKey,
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

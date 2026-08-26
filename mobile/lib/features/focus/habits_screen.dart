@@ -82,11 +82,11 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.checklist_outlined, size: 64, color: AppColors.textHint),
+          Icon(Icons.checklist_outlined, size: 64, color: AppColors.textHintOf(context)),
           const SizedBox(height: 16),
-          Text('No habits yet', style: TextStyle(fontSize: 18, color: AppColors.textSecondary)),
+          Text('No habits yet', style: TextStyle(fontSize: 18, color: AppColors.textSecondaryOf(context))),
           const SizedBox(height: 8),
-          Text('Create your first habit to start tracking', style: TextStyle(color: AppColors.textHint)),
+          Text('Create your first habit to start tracking', style: TextStyle(color: AppColors.textHintOf(context))),
         ],
       ),
     );
@@ -129,7 +129,7 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(habit.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                      Text(habit.frequency, style: TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+                      Text(habit.frequency, style: TextStyle(fontSize: 12, color: AppColors.textSecondaryOf(context))),
                     ],
                   ),
                 ),
@@ -148,13 +148,13 @@ class _HabitsScreenState extends ConsumerState<HabitsScreen> {
                 final dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
                 return Column(
                   children: [
-                    Text(dayLabels[date.weekday - 1], style: TextStyle(fontSize: 10, color: AppColors.textHint)),
+                    Text(dayLabels[date.weekday - 1], style: TextStyle(fontSize: 10, color: AppColors.textHintOf(context))),
                     const SizedBox(height: 4),
                     Container(
                       width: 24,
                       height: 24,
                       decoration: BoxDecoration(
-                        color: last7[i] ? AppColors.success : AppColors.border,
+                        color: last7[i] ? AppColors.success : AppColors.borderOf(context),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: last7[i] ? const Icon(Icons.check, size: 14, color: Colors.white) : null,

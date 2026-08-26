@@ -76,16 +76,16 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.note_add_outlined, size: 64, color: AppColors.textHint),
+          Icon(Icons.note_add_outlined, size: 64, color: AppColors.textHintOf(context)),
           const SizedBox(height: 16),
           Text(
             'No notes yet',
-            style: TextStyle(fontSize: 18, color: AppColors.textSecondary),
+            style: TextStyle(fontSize: 18, color: AppColors.textSecondaryOf(context)),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first note to get started',
-            style: TextStyle(color: AppColors.textHint),
+            style: TextStyle(color: AppColors.textHintOf(context)),
           ),
         ],
       ),
@@ -120,7 +120,7 @@ class _NotesScreenState extends ConsumerState<NotesScreen> {
               : note.contentMd,
           style: TextStyle(
             fontSize: 12,
-            color: AppColors.textSecondary,
+            color: AppColors.textSecondaryOf(context),
           ),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,

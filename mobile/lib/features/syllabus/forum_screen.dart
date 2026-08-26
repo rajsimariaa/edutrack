@@ -123,20 +123,20 @@ class _ForumScreenState extends State<ForumScreen> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.forum_outlined, size: 64, color: AppColors.textHint),
+                        Icon(Icons.forum_outlined, size: 64, color: AppColors.textHintOf(context)),
                         const SizedBox(height: 16),
                         Text(
                           'No discussions yet',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: AppColors.textSecondary,
+                            color: AppColors.textSecondaryOf(context),
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'Start a conversation about this topic',
-                          style: TextStyle(color: AppColors.textHint),
+                          style: TextStyle(color: AppColors.textHintOf(context)),
                         ),
                       ],
                     ),
@@ -193,7 +193,7 @@ class _ForumScreenState extends State<ForumScreen> {
                         _timeAgo(post.timestamp),
                         style: TextStyle(
                           fontSize: 12,
-                          color: AppColors.textHint,
+                          color: AppColors.textHintOf(context),
                         ),
                       ),
                     ],
@@ -219,14 +219,14 @@ class _ForumScreenState extends State<ForumScreen> {
                       Icon(
                         post.isLiked ? Icons.favorite : Icons.favorite_border,
                         size: 18,
-                        color: post.isLiked ? AppColors.secondary : AppColors.textHint,
+                        color: post.isLiked ? AppColors.secondary : AppColors.textHintOf(context),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${post.likes}',
                         style: TextStyle(
                           fontSize: 13,
-                          color: post.isLiked ? AppColors.secondary : AppColors.textHint,
+                          color: post.isLiked ? AppColors.secondary : AppColors.textHintOf(context),
                         ),
                       ),
                     ],
@@ -244,8 +244,8 @@ class _ForumScreenState extends State<ForumScreen> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border(top: BorderSide(color: AppColors.border)),
+        color: AppColors.surfaceOf(context),
+        border: Border(top: BorderSide(color: AppColors.borderOf(context))),
       ),
       child: SafeArea(
         top: false,
@@ -257,15 +257,15 @@ class _ForumScreenState extends State<ForumScreen> {
                 controller: _nameController,
                 decoration: InputDecoration(
                   hintText: 'Your name',
-                  hintStyle: TextStyle(color: AppColors.textHint, fontSize: 12),
+                  hintStyle: TextStyle(color: AppColors.textHintOf(context), fontSize: 12),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.borderOf(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.borderOf(context)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -282,15 +282,15 @@ class _ForumScreenState extends State<ForumScreen> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: 'Write a post...',
-                  hintStyle: TextStyle(color: AppColors.textHint),
+                  hintStyle: TextStyle(color: AppColors.textHintOf(context)),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.borderOf(context)),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.border),
+                    borderSide: BorderSide(color: AppColors.borderOf(context)),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8),

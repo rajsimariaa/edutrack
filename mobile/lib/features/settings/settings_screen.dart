@@ -16,7 +16,7 @@ class SettingsScreen extends ConsumerWidget {
       ),
       body: ListView(
         children: [
-          _buildSectionHeader('Appearance'),
+          _buildSectionHeader(context, 'Appearance'),
           _buildThemeTile(
             context,
             ref,
@@ -42,7 +42,7 @@ class SettingsScreen extends ConsumerWidget {
             currentMode: themeNotifier.themeMode,
           ),
           const Divider(),
-          _buildSectionHeader('Accessibility'),
+          _buildSectionHeader(context, 'Accessibility'),
           _buildFontSizeSection(context, ref, themeNotifier.fontSize),
           const Divider(),
           SwitchListTile(
@@ -68,15 +68,15 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionHeader(String title) {
+  Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
       child: Text(
         title,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: AppColors.textSecondary,
+          color: AppColors.textSecondaryOf(context),
         ),
       ),
     );
@@ -151,11 +151,11 @@ class SettingsScreen extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const SizedBox(width: 40),
-            _buildSizeLabel('Small', currentFontSize <= 0.85),
+            _buildSizeLabel(context, 'Small', currentFontSize <= 0.85),
             const Spacer(),
-            _buildSizeLabel('Medium', currentFontSize > 0.85 && currentFontSize < 1.15),
+            _buildSizeLabel(context, 'Medium', currentFontSize > 0.85 && currentFontSize < 1.15),
             const Spacer(),
-            _buildSizeLabel('Large', currentFontSize >= 1.15),
+            _buildSizeLabel(context, 'Large', currentFontSize >= 1.15),
             const SizedBox(width: 40),
           ],
         ),
@@ -163,12 +163,12 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildSizeLabel(String label, bool isActive) {
+  Widget _buildSizeLabel(BuildContext context, String label, bool isActive) {
     return Text(
       label,
       style: TextStyle(
         fontSize: 12,
-        color: isActive ? AppColors.primary : AppColors.textHint,
+        color: isActive ? AppColors.primary : AppColors.textHintOf(context),
         fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
       ),
     );

@@ -103,16 +103,16 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.primary : AppColors.surface,
+            color: isSelected ? AppColors.primary : AppColors.surfaceOf(context),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppColors.border),
+            border: Border.all(color: AppColors.borderOf(context)),
           ),
           alignment: Alignment.center,
           child: Text(
             label,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: isSelected ? Colors.white : AppColors.textPrimary,
+              color: isSelected ? Colors.white : AppColors.textPrimaryOf(context),
             ),
           ),
         ),
@@ -131,11 +131,11 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: isTop3
-            ? _rankColor(rank).withOpacity(0.05)
-            : AppColors.surface,
+            ? _rankColor(rank, context).withOpacity(0.05)
+            : AppColors.surfaceOf(context),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isTop3 ? _rankColor(rank) : AppColors.border,
+          color: isTop3 ? _rankColor(rank, context) : AppColors.borderOf(context),
           width: isTop3 ? 2 : 1,
         ),
       ),
@@ -144,12 +144,12 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
           SizedBox(
             width: 40,
             child: isTop3
-                ? Icon(Icons.emoji_events, color: _rankColor(rank), size: 28)
+                ? Icon(Icons.emoji_events, color: _rankColor(rank, context), size: 28)
                 : Text(
                     '#$rank',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textSecondary,
+                      color: AppColors.textSecondaryOf(context),
                     ),
                   ),
           ),
@@ -208,7 +208,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
     );
   }
 
-  Color _rankColor(int rank) {
+  Color _rankColor(int rank, BuildContext context) {
     switch (rank) {
       case 1:
         return const Color(0xFFFFD700);
@@ -217,7 +217,7 @@ class _LeaderboardScreenState extends ConsumerState<LeaderboardScreen> {
       case 3:
         return const Color(0xFFCD7F32);
       default:
-        return AppColors.textHint;
+        return AppColors.textHintOf(context);
     }
   }
 }
